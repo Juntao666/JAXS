@@ -18,6 +18,8 @@ ENDPOINT_EP = '/endpoints'
 ENDPOINT_RESP = 'Available endpoints'
 HELLO_EP = '/hello'
 HELLO_RESP = 'hello'
+NAME_EP = '/project_name'
+PROJECT_NAME = 'JAXS'
 
 
 @api.route(HELLO_EP)
@@ -46,3 +48,15 @@ class Endpoints(Resource):
         """
         endpoints = sorted(rule.rule for rule in api.app.url_map.iter_rules())
         return {"Available endpoints": endpoints}
+
+
+@api.route(NAME_EP)
+class ProjectName(Resource):
+    """
+    This class is used to return the name of the project as a string.
+    """
+    def get(self):
+        """
+        The `get()` method will return the project name as a string.
+        """
+        return PROJECT_NAME
