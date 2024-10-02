@@ -22,7 +22,8 @@ def test_hello():
     assert ep.HELLO_RESP in resp_json
 
 def test_project_name():
-    resp = TEST_CLIENT.get(ep.NAME_EP)
+    resp = TEST_CLIENT.get(ep.PROJECT_NAME_EP)
     resp_json = resp.get_json()
-    assert isinstance(resp_json, str)
-    assert ep.PROJECT_NAME == resp_json
+    assert ep.PROJECT_NAME_RESP in resp_json
+    assert isinstance(resp_json[ep.PROJECT_NAME_RESP], str)
+    assert len(resp_json[ep.PROJECT_NAME_RESP]) > 0

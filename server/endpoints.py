@@ -18,7 +18,8 @@ ENDPOINT_EP = '/endpoints'
 ENDPOINT_RESP = 'Available endpoints'
 HELLO_EP = '/hello'
 HELLO_RESP = 'hello'
-NAME_EP = '/project_name'
+PROJECT_NAME_EP = '/project_name'
+PROJECT_NAME_RESP = 'Project Name'
 PROJECT_NAME = 'JAXS'
 
 
@@ -50,13 +51,14 @@ class Endpoints(Resource):
         return {"Available endpoints": endpoints}
 
 
-@api.route(NAME_EP)
+@api.route(PROJECT_NAME_EP)
 class ProjectName(Resource):
     """
-    This class is used to return the name of the project as a string.
+    This class is used to handle the creating, retrieving,
+    deleting, editing of the journal name
     """
     def get(self):
         """
-        The `get()` method will return the project name as a string.
+        The `get()` method will retrieve the project name.
         """
-        return PROJECT_NAME
+        return {PROJECT_NAME_RESP: PROJECT_NAME}
