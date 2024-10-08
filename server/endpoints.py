@@ -10,6 +10,8 @@ from flask_cors import CORS
 
 # import werkzeug.exceptions as wz
 
+import data.people as ppl
+
 app = Flask(__name__)
 CORS(app)
 api = Api(app)
@@ -18,6 +20,7 @@ ENDPOINT_EP = '/endpoints'
 ENDPOINT_RESP = 'Available endpoints'
 HELLO_EP = '/hello'
 HELLO_RESP = 'hello'
+PEOPLE_EP = '/people'
 PROJECT_NAME_EP = '/project_name'
 PROJECT_NAME_RESP = 'Project Name'
 PROJECT_NAME = 'JAXS'
@@ -62,3 +65,16 @@ class ProjectName(Resource):
         The `get()` method will retrieve the project name.
         """
         return {PROJECT_NAME_RESP: PROJECT_NAME}
+
+
+@api.route(PEOPLE_EP)
+class People(Resource):
+    """
+    This class handles creating, reading, updating
+    and deleting people in journal
+    """
+    def get(self):
+        """
+        Retrieve the people in journal
+        """
+        return ppl.get_people()
