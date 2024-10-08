@@ -27,6 +27,7 @@ people_dict = {
     },
 }
 
+
 def get_people():
     """
         PARAM: none
