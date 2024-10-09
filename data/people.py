@@ -50,3 +50,17 @@ def delete_person(email):
         del people_dict[email]
         return True
     return False
+
+
+def create_person(name: str, affiliation: str, email: str):
+    """
+        PARAM: name (string), affiliation (string), email (string),
+            - information about the person to be added
+
+        RET: none
+
+        This function adds a user to people_dict.
+    """
+    if email in people_dict:
+        raise ValueError(f"Adding duplicate email {email}")
+    people_dict[email] = {NAME: name, AFFILIATION: affiliation, EMAIL: email}
