@@ -39,3 +39,14 @@ def test_get_people():
         assert isinstance(_id, str)
         assert len(_id) > 0
         assert NAME in person
+
+
+# def test_delete_person():
+#     email = ""
+#     resp = TEST_CLIENT.delete(f'{ep.PEOPLE_EP}/{email}')
+#     assert resp.status_code == 200
+
+#     # Check if the person is actually deleted
+#     resp = TEST_CLIENT.get(ep.PEOPLE_EP)
+#     resp_json = resp.get_json()
+#     assert email not in resp_json

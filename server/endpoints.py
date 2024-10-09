@@ -78,3 +78,13 @@ class People(Resource):
         Retrieve the people in journal
         """
         return ppl.get_people()
+
+    def delete(self, email):
+        """
+        Delete a person from the journal.
+        """
+        success = ppl.delete_person(email)
+        if success:
+            return {"message": f"User with email '{email}' was deleted."}, 200
+        else:
+            return {"error": "Person not found."}, 404
