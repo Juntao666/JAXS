@@ -57,10 +57,11 @@ def create_person(name: str, affiliation: str, email: str):
         PARAM: name (string), affiliation (string), email (string),
             - information about the person to be added
 
-        RET: none
+        RET: a boolean indicating whether the creation was successful
 
         This function adds a user to people_dict.
     """
     if email in people_dict:
         raise ValueError(f"Adding duplicate email {email}")
     people_dict[email] = {NAME: name, AFFILIATION: affiliation, EMAIL: email}
+    return True

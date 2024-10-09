@@ -41,6 +41,16 @@ def test_get_people():
         assert NAME in person
 
 
+def test_add_person():
+    NEW_EMAIL = "test@nyu.edu"
+    resp = TEST_CLIENT.post(f"{ep.PEOPLE_EP}/{NEW_EMAIL}/Random/Random")
+    assert resp.status_code == 200
+
+    people = TEST_CLIENT.get(ep.PEOPLE_EP)
+    resp_json = people.get_json()
+    assert NEW_EMAIL in resp_json
+
+
 # def test_delete_person():
 #     email = ""
 #     resp = TEST_CLIENT.delete(f'{ep.PEOPLE_EP}/{email}')

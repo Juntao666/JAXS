@@ -88,3 +88,16 @@ class People(Resource):
             return {"message": f"User with email '{email}' was deleted."}, 200
         else:
             return {"error": "Person not found."}, 404
+
+
+@api.route(f"{PEOPLE_EP}/<_id>/<name>/<affiliation>")
+class Person(Resource):
+    def post(self, name: str, affiliation: str, _id: str):
+        """
+        Add a person to the journal.
+        """
+        success = ppl.create_person(name, affiliation, _id)
+        if success:
+            return {"message": f"User with email '{_id}' was added."}, 200
+        else:
+            return {"error": "Person cannot be added."}, 404
