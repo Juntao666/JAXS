@@ -39,17 +39,13 @@ def get_people():
     return people
 
 
-def delete_person(email):
-    """
-        PARAM: email (string) - the email of the person to delete
-        RET: a boolean indicating whether the deletion was successful
-
-        This function deletes a user from people_dict based on their email.
-    """
-    if email in people_dict:
-        del people_dict[email]
-        return True
-    return False
+def delete_person(_id):
+    people = get_people
+    if _id in people:
+        del people[_id]
+        return _id
+    else:
+        return None
 
 
 def create_person(name: str, affiliation: str, email: str):
