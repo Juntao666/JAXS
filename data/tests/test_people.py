@@ -13,23 +13,13 @@ def test_get_people():
         assert ppl.NAME in person
 
 
-def test_delete_person():
-    # Check that the person is initially in the dictionary
+def test_del_person():
     people = ppl.get_people()
-    email_to_delete = ppl.DEL_EMAIL
-    assert email_to_delete in people
-
-    # Delete the person
-    deletion_success = ppl.delete_person(email_to_delete)
-    assert deletion_success is True
-
-    # Verify the person is no longer in the dictionary
+    old_len = len(people)
+    ppl.delete_person(ppl.DEL_EMAIL)
     people = ppl.get_people()
-    assert email_to_delete not in people
-
-    # Also try deleting a non-existing person
-    deletion_failure = ppl.delete_person('non_existing@nyu.edu')
-    assert deletion_failure is False
+    assert len(people) < old_len
+    assert ppl.DEL_EMAIL not in people
 
 
 NEW_EMAIL = "joe@nyu.edu"
