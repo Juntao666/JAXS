@@ -40,7 +40,7 @@ def get_people():
 
 
 def delete_person(_id):
-    people = get_people
+    people = get_people()
     if _id in people:
         del people[_id]
         return _id
