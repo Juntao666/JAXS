@@ -79,15 +79,12 @@ class People(Resource):
         """
         return ppl.get_people()
 
-    def delete(self, email):
-        """
-        Delete a person from the journal.
-        """
-        success = ppl.delete_person(email)
-        if success:
-            return {"message": f"User with email '{email}' was deleted."}, 200
-        else:
-            return {"error": "Person not found."}, 404
+
+@api.route(f'{PEOPLE_EP}/<_id>')
+class PersonDelete(Resource):
+    def delete(self, _id):
+        ret = ppl.delete_person(_id)
+        return {'Message': ret}
 
 
 @api.route(f"{PEOPLE_EP}/<_id>/<name>/<affiliation>")

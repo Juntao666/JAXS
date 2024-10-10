@@ -40,6 +40,12 @@ def get_people():
 
 
 def delete_person(_id):
+    """
+        PARAM: _id (string)
+        RET: returns _id (string) if successful, otherwise it returns None
+
+        This function deletes a user from people_dict based on their email.
+    """
     people = get_people()
     if _id in people:
         del people[_id]
