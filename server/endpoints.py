@@ -2,13 +2,13 @@
 This is the file containing all of the endpoints for our flask app.
 The endpoint called `endpoints` will return all available endpoints.
 """
-# from http import HTTPStatus
+from http import HTTPStatus
 
 from flask import Flask  # , request
 from flask_restx import Resource, Api  # Namespace, fields
 from flask_cors import CORS
 
-# import werkzeug.exceptions as wz
+import werkzeug.exceptions as wz
 
 import data.people as ppl
 
@@ -16,11 +16,19 @@ app = Flask(__name__)
 CORS(app)
 api = Api(app)
 
+DATE = '2024-10-17'
+DATE_RESP = 'Date'
+EDITOR = 'jl13036@nyu.edu'
+EDITOR_RESP = 'Editor'
 ENDPOINT_EP = '/endpoints'
 ENDPOINT_RESP = 'Available endpoints'
 HELLO_EP = '/hello'
 HELLO_RESP = 'hello'
+MESSAGE = 'Message'
 PEOPLE_EP = '/people'
+PUBLISHER = 'Palgave'
+PUBLISHER_RESP = 'Publisher'
+RETURN = 'return'
 PROJECT_NAME_EP = '/project_name'
 PROJECT_NAME_RESP = 'Project Name'
 PROJECT_NAME = 'JAXS'
@@ -64,7 +72,12 @@ class ProjectName(Resource):
         """
         The `get()` method will retrieve the project name.
         """
-        return {PROJECT_NAME_RESP: PROJECT_NAME}
+        return {
+            PROJECT_NAME_RESP: PROJECT_NAME,
+            EDITOR_RESP: EDITOR,
+            DATE_RESP: DATE,
+            PUBLISHER_RESP: PUBLISHER,
+        }
 
 
 @api.route(PEOPLE_EP)
