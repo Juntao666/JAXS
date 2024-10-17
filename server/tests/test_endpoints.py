@@ -51,6 +51,18 @@ def test_add_person():
     assert NEW_EMAIL in resp_json
 
 
+def test_update_person():
+    TEST_EMAIL = 'netID@nyu.edu'
+    resp = TEST_CLIENT.put(f"{ep.PEOPLE_EP}/{TEST_EMAIL}/new/new")
+    assert resp.status_code == 200
+
+    people = TEST_CLIENT.get(ep.PEOPLE_EP)
+    resp_json = people.get_json()
+    assert TEST_EMAIL in resp_json
+    assert resp_json[TEST_EMAIL]["name"] == "new"
+    assert resp_json[TEST_EMAIL]["affiliation"] == "new"
+
+
 # def test_delete_person():
 #     email = ""
 #     resp = TEST_CLIENT.delete(f'{ep.PEOPLE_EP}/{email}')
