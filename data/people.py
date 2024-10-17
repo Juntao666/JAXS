@@ -28,7 +28,7 @@ people_dict = {
 }
 
 
-def get_people():
+def read():
     """
         PARAM: none
         RET: a dictionary of users emails as keys
@@ -39,14 +39,14 @@ def get_people():
     return people
 
 
-def delete_person(_id):
+def delete(_id):
     """
         PARAM: _id (string)
         RET: returns _id (string) if successful, otherwise it returns None
 
         This function deletes a user from people_dict based on their email.
     """
-    people = get_people()
+    people = read()
     if _id in people:
         del people[_id]
         return _id
@@ -54,7 +54,7 @@ def delete_person(_id):
         return None
 
 
-def create_person(name: str, affiliation: str, email: str):
+def create(name: str, affiliation: str, email: str):
     """
         PARAM: name (string), affiliation (string), email (string),
             - information about the person to be added

@@ -90,7 +90,7 @@ class People(Resource):
         """
         Retrieve the people in journal
         """
-        return ppl.get_people()
+        return ppl.read()
 
 
 @api.route(f'{PEOPLE_EP}/<_id>')
@@ -98,7 +98,7 @@ class PersonDelete(Resource):
     @api.response(HTTPStatus.OK, 'Success.')
     @api.response(HTTPStatus.NOT_FOUND, 'No such person.')
     def delete(self, _id):
-        ret = ppl.delete_person(_id)
+        ret = ppl.delete(_id)
         if ret is not None:
             return {'Deleted': ret}
         else:
@@ -112,7 +112,7 @@ class Person(Resource):
         """
         Add a person to the journal.
         """
-        success = ppl.create_person(name, affiliation, _id)
+        success = ppl.create(name, affiliation, _id)
         if success:
             return {"message": f"User with email '{_id}' was added."}, 200
         else:
