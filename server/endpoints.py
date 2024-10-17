@@ -111,3 +111,13 @@ class Person(Resource):
             return {"message": f"User with email '{_id}' was added."}, 200
         else:
             return {"error": "Person cannot be added."}, 404
+
+    def put(self, name: str, affiliation: str, _id: str):
+        """
+        update a person in the journal.
+        """
+        success = ppl.update_person(name, affiliation, _id)
+        if success:
+            return {"message": f"User with email '{_id}' was updated."}, 200
+        else:
+            return {"error": "Person cannot be updated."}, 404

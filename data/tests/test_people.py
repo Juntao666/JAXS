@@ -24,7 +24,6 @@ def test_del_person():
 
 NEW_EMAIL = "joe@nyu.edu"
 
-
 def test_create_person():
     people = ppl.get_people()
     assert NEW_EMAIL not in people
@@ -38,3 +37,33 @@ def test_duplicate_person():
         ppl.create_person("Do Not Care", "Do Not Care", ppl.TEST_EMAIL)
     people = ppl.get_people()
     assert NEW_EMAIL in people
+
+
+TEST_EMAIL = 'netID@nyu.edu'
+NAME = 'name'
+ROLES = 'roles'
+AFFILIATION = 'affiliation'
+EMAIL = 'email'
+TEST_EMAIL_DATA = {
+        NAME: 'Person Created',
+        ROLES: [],
+        AFFILIATION: 'NYU',
+        EMAIL: TEST_EMAIL,
+    }
+
+def test_update_person():
+    people = ppl.get_people()
+    assert people[TEST_EMAIL] == TEST_EMAIL_DATA
+    response = ppl.update_person("new", "new", TEST_EMAIL)
+    people = ppl.get_people()
+    assert response
+    assert people[TEST_EMAIL] != TEST_EMAIL_DATA
+
+
+NONEXISTENT_EMAIL = "not-real@email.com"
+def test_update_nonexistent_person():
+    with pytest.raises(ValueError):
+        ppl.update_person("Do Not Care", "Do Not Care", NONEXISTENT_EMAIL)
+    people = ppl.get_people()
+    assert NONEXISTENT_EMAIL not in people
+
