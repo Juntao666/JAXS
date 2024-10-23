@@ -2,6 +2,7 @@ import pytest
 
 import data.people as ppl
 
+from data.roles import TEST_CODE
 
 NO_AT = 'jkajsd'
 NO_NAME = '@kalsj'
@@ -41,17 +42,18 @@ def test_del_person():
 
 NEW_EMAIL = "joe@nyu.edu"
 
+
 def test_create():
     people = ppl.read()
     assert NEW_EMAIL not in people
-    ppl.create("Joe Smith", "NYU", NEW_EMAIL)
+    ppl.create("Joe Smith", "NYU", NEW_EMAIL, TEST_CODE)
     people = ppl.read()
     assert NEW_EMAIL in people
 
 
 def test_duplicate_person():
     with pytest.raises(ValueError):
-        ppl.create("Do Not Care", "Do Not Care", ppl.TEST_EMAIL)
+        ppl.create("Do Not Care", "Do Not Care", ppl.TEST_EMAIL, TEST_CODE)
     people = ppl.read()
     assert NEW_EMAIL in people
 
@@ -71,7 +73,7 @@ TEST_EMAIL_DATA = {
 def test_update_person():
     people = ppl.read()
     assert people[TEST_EMAIL] == TEST_EMAIL_DATA
-    response = ppl.update_person("new", "new", TEST_EMAIL)
+    response = ppl.update_person("new", "new", TEST_EMAIL, "ED")
     people = ppl.read()
     assert response
     assert people[TEST_EMAIL] != TEST_EMAIL_DATA
@@ -80,7 +82,7 @@ def test_update_person():
 NONEXISTENT_EMAIL = "not-real@email.com"
 def test_update_nonexistent_person():
     with pytest.raises(ValueError):
-        ppl.update_person("Do Not Care", "Do Not Care", NONEXISTENT_EMAIL)
+        ppl.update_person("Do Not Care", "Do Not Care", NONEXISTENT_EMAIL, "ED")
     people = ppl.read()
     assert NONEXISTENT_EMAIL not in people
 

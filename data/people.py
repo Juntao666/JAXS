@@ -3,6 +3,8 @@ This module interfaces to our user data.
 """
 import re
 
+import data.roles as rls
+
 MIN_USER_NAME_LEN = 2
 # fields
 NAME = 'name'
@@ -62,7 +64,18 @@ def delete(_id):
         return None
 
 
-def create(name: str, affiliation: str, email: str):
+def is_valid_person(name: str, affiliation: str, email: str,
+                    role: str) -> bool:
+    if email in people_dict:
+        raise ValueError(f'Adding duplicate {email=}')
+    if not is_valid_email(email):
+        raise ValueError(f'Invalid email: {email}')
+    if not rls.is_valid(role):
+        raise ValueError(f'Invalid role: {role}')
+    return True
+
+
+def create(name: str, affiliation: str, email: str, role: str):
     """
         PARAM: name (string), affiliation (string), email (string),
             - information about the person to be added
@@ -73,11 +86,13 @@ def create(name: str, affiliation: str, email: str):
     """
     if email in people_dict:
         raise ValueError(f"Adding duplicate email {email}")
-    people_dict[email] = {NAME: name, AFFILIATION: affiliation, EMAIL: email}
-    return True
+    if is_valid_person(name, affiliation, email, role):
+        people_dict[email] = {NAME: name, AFFILIATION: affiliation,
+                              EMAIL: email, ROLES: role}
+    return email
 
 
-def update_person(name: str, affiliation: str, email: str):
+def update_person(name: str, affiliation: str, email: str, role: str):
     """
         PARAM: name (string), affiliation (string), email (string),
             - information about the person to be updated
@@ -90,5 +105,13 @@ def update_person(name: str, affiliation: str, email: str):
         raise ValueError(f"User with email {email} does not exist")
     else:
         people_dict[email] = {NAME: name, AFFILIATION: affiliation,
-                              EMAIL: email}
+                              EMAIL: email, ROLES: role}
         return True
+
+
+def main():
+    print(read())
+
+
+if __name__ == '__main__':
+    main()

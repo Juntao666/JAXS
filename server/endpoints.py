@@ -106,23 +106,23 @@ class PersonDelete(Resource):
         # return {'Message': ret}
 
 
-@api.route(f"{PEOPLE_EP}/<_id>/<name>/<affiliation>")
+@api.route(f"{PEOPLE_EP}/<_id>/<name>/<affiliation>/<role>")
 class Person(Resource):
-    def post(self, name: str, affiliation: str, _id: str):
+    def post(self, name: str, affiliation: str, _id: str, role: str):
         """
         Add a person to the journal.
         """
-        success = ppl.create(name, affiliation, _id)
+        success = ppl.create(name, affiliation, _id, role)
         if success:
             return {"message": f"User with email '{_id}' was added."}, 200
         else:
             return {"error": "Person cannot be added."}, 404
 
-    def put(self, name: str, affiliation: str, _id: str):
+    def put(self, name: str, affiliation: str, _id: str, role: str):
         """
         update a person in the journal.
         """
-        success = ppl.update_person(name, affiliation, _id)
+        success = ppl.update_person(name, affiliation, _id, role)
         if success:
             return {"message": f"User with email '{_id}' was updated."}, 200
         else:
@@ -133,6 +133,7 @@ PEOPLE_CREATE_FLDS = api.model('AddNewPeopleEntry', {
     ppl.NAME: fields.String,
     ppl.EMAIL: fields.String,
     ppl.AFFILIATION: fields.String,
+    ppl.ROLES: fields.String,
 })
 
 
@@ -152,7 +153,8 @@ class PeopleCreate(Resource):
             name = request.json.get(ppl.NAME)
             affiliation = request.json.get(ppl.AFFILIATION)
             email = request.json.get(ppl.EMAIL)
-            ret = ppl.create(name, affiliation, email)
+            role = request.json.get(ppl.ROLES)
+            ret = ppl.create(name, affiliation, email, role)
         except Exception as err:
             raise wz.NotAcceptable(f'Could not add person: '
                                    f'{err=}')

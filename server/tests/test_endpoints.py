@@ -43,7 +43,7 @@ def test_get_people():
 
 def test_add_person():
     NEW_EMAIL = "test@nyu.edu"
-    resp = TEST_CLIENT.post(f"{ep.PEOPLE_EP}/{NEW_EMAIL}/Random/Random")
+    resp = TEST_CLIENT.post(f"{ep.PEOPLE_EP}/{NEW_EMAIL}/Random/Random/RE")
     assert resp.status_code == 200
 
     people = TEST_CLIENT.get(ep.PEOPLE_EP)
@@ -53,7 +53,7 @@ def test_add_person():
 
 def test_update_person():
     TEST_EMAIL = 'netID@nyu.edu'
-    resp = TEST_CLIENT.put(f"{ep.PEOPLE_EP}/{TEST_EMAIL}/new/new")
+    resp = TEST_CLIENT.put(f"{ep.PEOPLE_EP}/{TEST_EMAIL}/new/new/ED")
     assert resp.status_code == 200
 
     people = TEST_CLIENT.get(ep.PEOPLE_EP)
