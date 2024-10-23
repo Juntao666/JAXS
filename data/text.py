@@ -43,8 +43,17 @@ def create(key: str, title: str, text: str):
     return f"'{title}' created successfully."
 
 
-def delete():
-    pass
+def delete(key: str):
+    """
+    Removes a page entry from the text_dict if the key exists.
+    Arguments:
+        - key: The key of the page to delete
+    Returns a success message or a does not exist message
+    """
+    if key not in text_dict:
+        return f"'{key}' does not exist."
+    del text_dict[key]
+    return f"'{key}' deleted successfully."
 
 
 def update():
