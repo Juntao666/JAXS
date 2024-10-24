@@ -31,11 +31,15 @@ people_dict = {
 }
 
 
-CHAR_OR_DIGIT = '[A-Za-z0-9]'
+LOCAL_PART = r'[a-zA-Z0-9._%+-]+'
+DOMAIN_PART = r'(?=.{1,})(?!.*\.{2})[a-zA-Z0-9.-]+'
+TOP_LEVEL_DOMAIN = r'[a-zA-Z]{2,}'
+
+EMAIL_PATTERN = fr'^{LOCAL_PART}@{DOMAIN_PART}\.{TOP_LEVEL_DOMAIN}$'
 
 
 def is_valid_email(email: str) -> bool:
-    return re.match(f"{CHAR_OR_DIGIT}.*@{CHAR_OR_DIGIT}.*", email)
+    return re.match(EMAIL_PATTERN, email)
 
 
 def read():
