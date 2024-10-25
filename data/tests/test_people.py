@@ -86,3 +86,7 @@ def test_update_nonexistent_person():
     people = ppl.read()
     assert NONEXISTENT_EMAIL not in people
 
+def test_get_masthead():
+    mh = ppl.get_masthead()
+    assert isinstance(mh, dict)
+
