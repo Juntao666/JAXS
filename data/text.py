@@ -56,8 +56,19 @@ def delete(key: str):
     return f"'{key}' deleted successfully."
 
 
-def update():
-    pass
+def update(key: str, title: str, text: str):
+    """
+    Updates a page entry to the text_dict if the key already exist.
+    Arguments:
+        - key: The key for the page
+        - title: The new title of the page
+        - text: The new body text for the page
+    Returns a success message or does not exists message
+    """
+    if key not in text_dict:
+        return f"'{key}' does not exists."
+    text_dict[key] = {TITLE: title, TEXT: text}
+    return f"'{title}' updated successfully."
 
 
 def read():
