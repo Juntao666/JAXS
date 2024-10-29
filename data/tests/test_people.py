@@ -7,6 +7,19 @@ from data.roles import TEST_CODE
 NO_AT = 'jkajsd'
 NO_NAME = '@kalsj'
 NO_DOMAIN = 'kajshd@'
+NO_SUB_DOMAIN = 'kajshd@com'
+DOMAIN_TOO_SHORT = 'kajshd@nyu.e'
+DOMAIN_TOO_LONG = 'kajshd@nyu.eedduu'
+
+
+TEMP_EMAIL = 'temp_person@temp.org'
+
+
+@pytest.fixture(scope='function')
+def temp_person():
+    ret = ppl.create('Joe Smith', 'NYU', TEMP_EMAIL, TEST_CODE)
+    yield ret
+    ppl.delete(ret)
 
 
 def test_is_valid_email_no_at():
@@ -19,6 +32,22 @@ def test_is_valid_no_name():
 
 def test_is_valid_no_domain():
     assert not ppl.is_valid_email(NO_DOMAIN)
+
+
+def test_is_valid_no_sub_domain():
+    assert not ppl.is_valid_email(NO_SUB_DOMAIN)
+
+
+def test_is_valid_email_domain_too_short():
+    assert not ppl.is_valid_email(DOMAIN_TOO_SHORT)
+
+
+def test_is_valid_email_domain_too_long():
+    assert not ppl.is_valid_email(DOMAIN_TOO_LONG)
+
+
+def test_is_valid_email():
+    assert ppl.is_valid_email('sl9052@nyu.edu')
 
 
 def test_read():

@@ -33,7 +33,7 @@ people_dict = {
 
 LOCAL_PART = r'[a-zA-Z0-9._%+-]+'
 DOMAIN_PART = r'(?=.{1,})(?!.*\.{2})[a-zA-Z0-9.-]+'
-TOP_LEVEL_DOMAIN = r'[a-zA-Z]{2,}'
+TOP_LEVEL_DOMAIN = r'[a-zA-Z]{2,3}'
 
 EMAIL_PATTERN = fr'^{LOCAL_PART}@{DOMAIN_PART}\.{TOP_LEVEL_DOMAIN}$'
 
