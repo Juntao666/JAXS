@@ -38,3 +38,12 @@ def test_update_none_existent():
     response = txt.update(NONE_EXISTENT_KEY, "N/A", "N/A")
     assert response
     assert txt.read_one(NONE_EXISTENT_KEY) == {}
+
+
+def test_delete_text():
+    text = txt.read()
+    old_len = len(text)
+    txt.delete(txt.DEL_KEY)
+    text = txt.read()
+    assert len(text) < old_len
+    assert txt.DEL_KEY not in text
