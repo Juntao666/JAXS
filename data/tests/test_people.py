@@ -59,8 +59,10 @@ def test_read():
         assert isinstance(_id, str)
         assert ppl.NAME in person
 
+def test_read_one(temp_person):
+    assert ppl.read_one(temp_person) is not None
 
-def test_del_person():
+def test_delete():
     people = ppl.read()
     old_len = len(people)
     ppl.delete(ppl.DEL_EMAIL)
