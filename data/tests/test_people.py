@@ -2,7 +2,7 @@ import pytest
 
 import data.people as ppl
 
-from data.roles import TEST_CODE
+from data.roles import TEST_CODE as TEST_ROLE_CODE
 
 NO_AT = 'jkajsd'
 NO_NAME = '@kalsj'
@@ -11,15 +11,32 @@ NO_SUB_DOMAIN = 'kajshd@com'
 DOMAIN_TOO_SHORT = 'kajshd@nyu.e'
 DOMAIN_TOO_LONG = 'kajshd@nyu.eedduu'
 
-
 TEMP_EMAIL = 'temp_person@temp.org'
 
 
 @pytest.fixture(scope='function')
 def temp_person():
-    ret = ppl.create('Joe Smith', 'NYU', TEMP_EMAIL, TEST_CODE)
-    yield ret
-    ppl.delete(ret)
+    _id = ppl.create('Joe Smith', 'NYU', TEMP_EMAIL, TEST_ROLE_CODE)
+    yield _id
+    ppl.delete(_id)
+
+
+def test_create_mh_rec(temp_person):
+    person_rec = ppl.read_one(temp_person)
+    mh_rec = ppl.create_mh_rec(person_rec)
+    assert isinstance(mh_rec, dict)
+    for field in ppl.MH_FIELDS:
+        assert field in mh_rec
+
+
+def test_has_role(temp_person):
+    person_rec = ppl.read_one(temp_person)
+    assert ppl.has_role(person_rec, TEST_ROLE_CODE)
+
+
+def test_doesnt_have_role(temp_person):
+    person_rec = ppl.read_one(temp_person)
+    assert not ppl.has_role(person_rec, 'Not a good role!')
 
 
 def test_is_valid_email_no_at():
@@ -50,6 +67,12 @@ def test_is_valid_email():
     assert ppl.is_valid_email('sl9052@nyu.edu')
 
 
+def test_create_bad_email():
+    with pytest.raises(ValueError):
+        ppl.create('Do not care about name',
+                   'Or affiliation', 'bademail', TEST_ROLE_CODE)
+
+
 def test_read():
     people = ppl.read()
     assert isinstance(people, dict)
@@ -59,11 +82,14 @@ def test_read():
         assert isinstance(_id, str)
         assert ppl.NAME in person
 
+
 def test_read_one(temp_person):
     assert ppl.read_one(temp_person) is not None
 
+
 def test_read_one_not_there():
     assert ppl.read_one('Not an existing email!') is None
+
 
 def test_delete():
     people = ppl.read()
@@ -80,14 +106,14 @@ NEW_EMAIL = "joe@nyu.edu"
 def test_create():
     people = ppl.read()
     assert NEW_EMAIL not in people
-    ppl.create("Joe Smith", "NYU", NEW_EMAIL, TEST_CODE)
+    ppl.create("Joe Smith", "NYU", NEW_EMAIL, TEST_ROLE_CODE)
     people = ppl.read()
     assert NEW_EMAIL in people
 
 
 def test_duplicate_person():
     with pytest.raises(ValueError):
-        ppl.create("Do Not Care", "Do Not Care", ppl.TEST_EMAIL, TEST_CODE)
+        ppl.create("Do Not Care", "Do Not Care", ppl.TEST_EMAIL, TEST_ROLE_CODE)
     people = ppl.read()
     assert NEW_EMAIL in people
 
@@ -95,8 +121,8 @@ def test_duplicate_person():
 def test_create_duplicate():
     with pytest.raises(ValueError):
         ppl.create('Do not care about name',
-                   'Or affiliation', ppl.TEST_EMAIL, TEST_CODE)
-                   
+                   'Or affiliation', ppl.TEST_EMAIL, TEST_ROLE_CODE)
+
 
 TEST_EMAIL = 'netID@nyu.edu'
 NAME = 'name'
@@ -104,11 +130,12 @@ ROLES = 'roles'
 AFFILIATION = 'affiliation'
 EMAIL = 'email'
 TEST_EMAIL_DATA = {
-        NAME: 'Person Created',
-        ROLES: [],
-        AFFILIATION: 'NYU',
-        EMAIL: TEST_EMAIL,
-    }
+    NAME: 'Person Created',
+    ROLES: [],
+    AFFILIATION: 'NYU',
+    EMAIL: TEST_EMAIL,
+}
+
 
 def test_update_person():
     people = ppl.read()
@@ -120,13 +147,15 @@ def test_update_person():
 
 
 NONEXISTENT_EMAIL = "not-real@email.com"
+
+
 def test_update_nonexistent_person():
     with pytest.raises(ValueError):
         ppl.update_person("Do Not Care", "Do Not Care", NONEXISTENT_EMAIL, "ED")
     people = ppl.read()
     assert NONEXISTENT_EMAIL not in people
 
+
 def test_get_masthead():
     mh = ppl.get_masthead()
     assert isinstance(mh, dict)
-
