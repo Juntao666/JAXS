@@ -1,15 +1,15 @@
-from http.client import (
-    BAD_REQUEST,
-    FORBIDDEN,
-    NOT_ACCEPTABLE,
-    NOT_FOUND,
-    OK,
-    SERVICE_UNAVAILABLE,
-)
-
-from unittest.mock import patch
-
-import pytest
+# from http.client import (
+#     BAD_REQUEST,
+#     FORBIDDEN,
+#     NOT_ACCEPTABLE,
+#     NOT_FOUND,
+#     OK,
+#     SERVICE_UNAVAILABLE,
+# )
+#
+# from unittest.mock import patch
+#
+# import pytest
 
 from data.people import NAME
 
@@ -42,25 +42,25 @@ def test_get_people():
 
 
 def test_add_person():
-    NEW_EMAIL = "test@nyu.edu"
-    resp = TEST_CLIENT.post(f"{ep.PEOPLE_EP}/{NEW_EMAIL}/Random/Random/RE")
+    new_email = "test@nyu.edu"
+    resp = TEST_CLIENT.post(f"{ep.PEOPLE_EP}/{new_email}/Random/Random/RE")
     assert resp.status_code == 200
 
     people = TEST_CLIENT.get(ep.PEOPLE_EP)
     resp_json = people.get_json()
-    assert NEW_EMAIL in resp_json
+    assert new_email in resp_json
 
 
 def test_update_person():
-    TEST_EMAIL = 'netID@nyu.edu'
-    resp = TEST_CLIENT.put(f"{ep.PEOPLE_EP}/{TEST_EMAIL}/new/new/ED")
+    test_email = 'netID@nyu.edu'
+    resp = TEST_CLIENT.put(f"{ep.PEOPLE_EP}/{test_email}/new/new/ED")
     assert resp.status_code == 200
 
     people = TEST_CLIENT.get(ep.PEOPLE_EP)
     resp_json = people.get_json()
-    assert TEST_EMAIL in resp_json
-    assert resp_json[TEST_EMAIL]["name"] == "new"
-    assert resp_json[TEST_EMAIL]["affiliation"] == "new"
+    assert test_email in resp_json
+    assert resp_json[test_email]["name"] == "new"
+    assert resp_json[test_email]["affiliation"] == "new"
 
 
 # def test_delete_person():
