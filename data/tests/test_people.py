@@ -159,3 +159,9 @@ def test_update_nonexistent_person():
 def test_get_masthead():
     mh = ppl.get_masthead()
     assert isinstance(mh, dict)
+
+
+VALID_ROLES = ['ED', 'AU']
+@pytest.mark.skip('Skipping cause not done.')
+def test_update(temp_person):
+    ppl.update('Buffalo Bill', 'UBuffalo', temp_person, VALID_ROLES)

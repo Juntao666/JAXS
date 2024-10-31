@@ -19,11 +19,12 @@ def test_read_one_not_found():
 TITLE = 'title'
 TEXT = 'text'
 TEST_KEY_DATA = {
-        TITLE: 'Home Page',
-        TEXT: 'This is a journal about building API servers.',
-    }
+    TITLE: 'Home Page',
+    TEXT: 'This is a journal about building API servers.',
+}
 NEW_TEXT = "NEW TEXT"
 NEW_TITLE = "NEW TITLE"
+
 
 def test_update():
     assert txt.read_one(txt.TEST_KEY) == TEST_KEY_DATA
@@ -33,6 +34,7 @@ def test_update():
 
 
 NONE_EXISTENT_KEY = "NOT EXIST"
+
 
 def test_update_none_existent():
     response = txt.update(NONE_EXISTENT_KEY, "N/A", "N/A")
@@ -47,3 +49,14 @@ def test_delete_text():
     text = txt.read()
     assert len(text) < old_len
     assert txt.DEL_KEY not in text
+
+
+NEW_KEY = "NEW TEXT"
+
+
+def test_create():
+    text = txt.read()
+    assert NEW_KEY not in text
+    txt.create(NEW_KEY, "Title", "content")
+    text = txt.read()
+    assert NEW_KEY in text
