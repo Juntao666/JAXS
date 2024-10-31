@@ -124,32 +124,15 @@ def update_person(name: str, affiliation: str, email: str, role: str):
         return True
 
 
-def has_role(person: dict, role: str) -> bool:
-    if role in person.get(ROLES):
-        return True
-    return False
-
-
-MH_FIELDS = [NAME, AFFILIATION]
-
-
-def create_mh_rec(person: dict) -> dict:
-    mh_rec = {}
-    for field in MH_FIELDS:
-        mh_rec[field] = person.get(field, '')
-    return mh_rec
-
-
 def get_masthead() -> dict:
     masthead = {}
     mh_roles = rls.get_masthead_roles()
     for mh_role, text in mh_roles.items():
-        people_w_role = []
-        people = read()
-        for _id, person in people.items():
-            if has_role(person, mh_role):
-                rec = create_mh_rec(person)
-                people_w_role.append(rec)
+        people_w_role = {}
+        for person in read():
+            pass
+            # if has_role(person):
+            #     put their record in people_w_role
         masthead[text] = people_w_role
     return masthead
 
