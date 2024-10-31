@@ -92,6 +92,12 @@ def test_duplicate_person():
     assert NEW_EMAIL in people
 
 
+def test_create_duplicate():
+    with pytest.raises(ValueError):
+        ppl.create('Do not care about name',
+                   'Or affiliation', ppl.TEST_EMAIL, TEST_CODE)
+                   
+
 TEST_EMAIL = 'netID@nyu.edu'
 NAME = 'name'
 ROLES = 'roles'
