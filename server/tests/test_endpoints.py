@@ -1,15 +1,15 @@
-# from http.client import (
-#     BAD_REQUEST,
-#     FORBIDDEN,
-#     NOT_ACCEPTABLE,
-#     NOT_FOUND,
-#     OK,
-#     SERVICE_UNAVAILABLE,
-# )
-#
-# from unittest.mock import patch
-#
-# import pytest
+from http.client import (
+    BAD_REQUEST,
+    FORBIDDEN,
+    NOT_ACCEPTABLE,
+    NOT_FOUND,
+    OK,
+    SERVICE_UNAVAILABLE,
+)
+
+from unittest.mock import patch
+
+import pytest
 
 from data.people import NAME
 
