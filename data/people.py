@@ -42,7 +42,7 @@ def is_valid_email(email: str) -> bool:
     return re.match(EMAIL_PATTERN, email)
 
 
-def read():
+def read() -> dict:
     """
         PARAM: none
         RET: a dictionary of users emails as keys
@@ -133,9 +133,13 @@ def has_role(person: dict, role: str) -> bool:
 MH_FIELDS = [NAME, AFFILIATION]
 
 
+def get_mh_fields(journal_code=None) -> list:
+    return MH_FIELDS
+
+
 def create_mh_rec(person: dict) -> dict:
     mh_rec = {}
-    for field in MH_FIELDS:
+    for field in get_mh_fields():
         mh_rec[field] = person.get(field, '')
     return mh_rec
 
