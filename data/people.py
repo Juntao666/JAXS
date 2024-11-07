@@ -93,6 +93,7 @@ def is_valid_person(name: str, affiliation: str, email: str,
 def create(name: str, affiliation: str, email: str, role: str):
     """
         PARAM: name (string), affiliation (string), email (string),
+               role (string)
             - information about the person to be added
 
         RET: a boolean indicating whether the creation was successful
@@ -107,9 +108,10 @@ def create(name: str, affiliation: str, email: str, role: str):
     return email
 
 
-def update_person(name: str, affiliation: str, email: str, role: str):
+def update_person(name: str, affiliation: str, email: str, roles: list):
     """
         PARAM: name (string), affiliation (string), email (string),
+               roles (list)
             - information about the person to be updated
 
         RET: a boolean indicating whether the update was successful
@@ -118,9 +120,9 @@ def update_person(name: str, affiliation: str, email: str, role: str):
     """
     if email not in people_dict:
         raise ValueError(f"User with email {email} does not exist")
-    else:
+    if is_valid_person(name, affiliation, email, roles):
         people_dict[email] = {NAME: name, AFFILIATION: affiliation,
-                              EMAIL: email, ROLES: role}
+                              EMAIL: email, ROLES: roles}
         return True
 
 
