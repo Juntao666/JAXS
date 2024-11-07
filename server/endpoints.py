@@ -33,6 +33,9 @@ PROJECT_NAME_EP = '/project_name'
 PROJECT_NAME_RESP = 'Project Name'
 PROJECT_NAME = 'JAXS'
 MASTHEAD = 'Masthead'
+TITLE = 'The Journal of API Technology'
+TITLE_EP = '/title'
+TITLE_RESP = 'Title'
 
 
 @api.route(HELLO_EP)
@@ -49,7 +52,7 @@ class HelloWorld(Resource):
         return {HELLO_RESP: 'world'}
 
 
-@api.route('/endpoints')
+@api.route(ENDPOINT_EP)
 class Endpoints(Resource):
     """
     This class will serve as live, fetchable documentation of what endpoints
