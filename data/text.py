@@ -28,7 +28,7 @@ text_dict = {
 }
 
 
-def create(key: str, title: str, text: str):
+def create(key: str, title: str, text: str) -> str:
     """
     Adds a new page entry to the text_dict if the key does not already exist.
     Arguments:
@@ -43,7 +43,7 @@ def create(key: str, title: str, text: str):
     return f"'{title}' created successfully."
 
 
-def delete(key: str):
+def delete(key: str) -> str:
     """
     Removes a page entry from the text_dict if the key exists.
     Arguments:
@@ -56,7 +56,7 @@ def delete(key: str):
     return f"'{key}' deleted successfully."
 
 
-def update(key: str, title: str, text: str):
+def update(key: str, title: str, text: str) -> str:
     """
     Updates a page entry to the text_dict if the key already exist.
     Arguments:
@@ -71,7 +71,7 @@ def update(key: str, title: str, text: str):
     return f"'{title}' updated successfully."
 
 
-def read():
+def read() -> dict:
     """
     Our contract:
         - No arguments.
@@ -82,9 +82,13 @@ def read():
     return text
 
 
-def read_one(key: str) -> dict:
-    # This should take a key and return the page dictionary
-    # for that key. Return an empty dictionary of key not found.
+def read_one(key: str):
+    """
+    Retrieves the page dictionary for a key.
+    Arguments:
+        - key: The key for the page
+    Returns the page dictionary or None if key not found.
+    """
     result = {}
     if key in text_dict:
         result = text_dict[key]

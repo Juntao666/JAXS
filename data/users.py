@@ -6,7 +6,7 @@ LEVEL = 'level'
 MIN_USER_NAME_LEN = 2
 
 
-def get_users():
+def get_users() -> dict:
     """
     Our contract:
         - No arguments.
