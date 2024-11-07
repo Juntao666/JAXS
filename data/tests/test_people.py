@@ -1,6 +1,7 @@
 import pytest
 
 import data.people as ppl
+import data.roles as rls
 
 from data.roles import TEST_CODE as TEST_ROLE_CODE
 
@@ -137,7 +138,7 @@ AFFILIATION = 'affiliation'
 EMAIL = 'email'
 TEST_EMAIL_DATA = {
     NAME: 'Person Created',
-    ROLES: [],
+    ROLES: [rls.ED_CODE],
     AFFILIATION: 'NYU',
     EMAIL: TEST_EMAIL,
 }

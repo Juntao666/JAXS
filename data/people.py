@@ -18,13 +18,13 @@ DEL_EMAIL = 'delete@nyu.edu'
 people_dict = {
     TEST_EMAIL: {
         NAME: 'Person Created',
-        ROLES: [],
+        ROLES: [rls.ED_CODE],
         AFFILIATION: 'NYU',
         EMAIL: TEST_EMAIL,
     },
     DEL_EMAIL: {
         NAME: 'Person Deleted',
-        ROLES: [],
+        ROLES: [rls.CE_CODE],
         AFFILIATION: 'NYU',
         EMAIL: DEL_EMAIL,
     },
