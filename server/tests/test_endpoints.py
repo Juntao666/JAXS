@@ -34,7 +34,14 @@ def test_read(mock_read):
         assert isinstance(_id, str)
         assert len(_id) > 0
         assert NAME in person
-        
+
+
+@patch('data.people.read_one', autospec=True,
+       return_value={NAME: 'Joe Schmoe'})
+def test_read_one(mock_read):
+    resp = TEST_CLIENT.get(f'{ep.PEOPLE_EP}/mock_id')
+    assert resp.status_code == OK
+
 
 def test_project_name():
     resp = TEST_CLIENT.get(ep.PROJECT_NAME_EP)

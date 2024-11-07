@@ -101,6 +101,18 @@ class People(Resource):
 class PersonDelete(Resource):
     @api.response(HTTPStatus.OK, 'Success.')
     @api.response(HTTPStatus.NOT_FOUND, 'No such person.')
+    def get(self, _id):
+        """
+        Retrieve a journal person.
+        """
+        person = ppl.read_one(_id)
+        if person:
+            return person, HTTPStatus.OK
+        else:
+            raise wz.NotFound(f'No such record: {_id}')
+
+    @api.response(HTTPStatus.OK, 'Success.')
+    @api.response(HTTPStatus.NOT_FOUND, 'No such person.')
     def delete(self, _id):
         ret = ppl.delete(_id)
         if ret is not None:
