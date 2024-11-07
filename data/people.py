@@ -39,6 +39,12 @@ EMAIL_PATTERN = fr'^{LOCAL_PART}@{DOMAIN_PART}\.{TOP_LEVEL_DOMAIN}$'
 
 
 def is_valid_email(email: str) -> bool:
+    """
+    Checks if email is valid
+    Arguments:
+        - email: email as a string
+    Returns a boolean of whether the email is valid
+    """
     return re.match(EMAIL_PATTERN, email)
 
 
@@ -78,6 +84,16 @@ def delete(_id):
 
 def is_valid_person(name: str, affiliation: str, email: str,
                     role: str = None, roles: list = None) -> bool:
+    """
+    Checks if person is valid
+    Arguments:
+        - name: name of person
+        - affiliation: affiliation of person
+        - email: email of person
+        - role: role of person
+        - roles: all the roles of the person
+    Returns a boolean of whether the person is valid
+    """
     if not is_valid_email(email):
         raise ValueError(f'Invalid email: {email}')
     if role:
@@ -127,6 +143,13 @@ def update_person(name: str, affiliation: str, email: str, roles: list):
 
 
 def has_role(person: dict, role: str) -> bool:
+    """
+    Checks if a person has a role
+    Arguments:
+        - person: the person represented as a dictionary
+        - role: the role to check for
+    Returns a boolean of whether the person has the role
+    """
     if role in person.get(ROLES):
         return True
     return False
@@ -136,10 +159,22 @@ MH_FIELDS = [NAME, AFFILIATION]
 
 
 def get_mh_fields(journal_code=None) -> list:
+    """
+    gets all masthead fields
+    Arguments:
+        - journal_code: the journal code
+    Returns all masthead fields as a list
+    """
     return MH_FIELDS
 
 
 def create_mh_rec(person: dict) -> dict:
+    """
+    create a masthead record
+    Arguments:
+        - person: person represented as a dict
+    Returns the masthead record created
+    """
     mh_rec = {}
     for field in get_mh_fields():
         mh_rec[field] = person.get(field, '')
@@ -147,6 +182,12 @@ def create_mh_rec(person: dict) -> dict:
 
 
 def get_masthead() -> dict:
+    """
+    Returns the masthead
+    Arguments:
+        - None
+    Returns the masthead dict
+    """
     masthead = {}
     mh_roles = rls.get_masthead_roles()
     for mh_role, text in mh_roles.items():

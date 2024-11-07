@@ -38,9 +38,9 @@ def create(key: str, title: str, text: str) -> str:
     Returns a success message or already exists message
     """
     if key in text_dict:
-        return f"'{key}' already exists."
+        raise ValueError(f"Adding duplicate text {key}")
     text_dict[key] = {TITLE: title, TEXT: text}
-    return f"'{title}' created successfully."
+    return key
 
 
 def delete(key: str) -> str:

@@ -1,4 +1,13 @@
+import pytest
+
 import data.text as txt
+
+
+@pytest.fixture(scope='function')
+def temp_text():
+    _key = txt.create('TempText', 'Temp Text Title', "Temp Text Texts")
+    yield _key
+    txt.delete(_key)
 
 
 def test_read():
@@ -8,8 +17,8 @@ def test_read():
         assert isinstance(key, str)
 
 
-def test_read_one():
-    assert len(txt.read_one(txt.TEST_KEY)) > 0
+def test_read_one(temp_text):
+    assert txt.read_one(temp_text) is not None
 
 
 def test_read_one_not_found():
