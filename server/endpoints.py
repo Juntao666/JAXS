@@ -76,12 +76,16 @@ class ProjectName(Resource):
         """
         The `get()` method will retrieve the project name.
         """
-        return {
+        project_name = {
             PROJECT_NAME_RESP: PROJECT_NAME,
             EDITOR_RESP: EDITOR,
             DATE_RESP: DATE,
             PUBLISHER_RESP: PUBLISHER,
         }
+        if project_name:
+            return project_name, HTTPStatus.OK
+        else:
+            raise wz.NotFound('Project name not found.')
 
 
 @api.route(PEOPLE_EP)

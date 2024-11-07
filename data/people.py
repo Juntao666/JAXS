@@ -55,8 +55,8 @@ def read() -> dict:
 
         Note: each user email must be the key for another dictionary
     """
-    people = people_dict
-    return people
+    print('read() has been called')
+    return people_dict
 
 
 def read_one(email: str) -> dict:
