@@ -46,16 +46,25 @@ def test_doesnt_have_role(temp_person):
     assert not ppl.has_role(person_rec, 'Not a good role!')
 
 
-def test_is_valid_email_no_at():
-    assert not ppl.is_valid_email(NO_AT)
+@pytest.fixture
+def invalid_emails():
+    return {
+        "no_at": "userexample.com",
+        "no_name": "@example.com",
+        "no_domain": "user@"
+    }
 
 
-def test_is_valid_no_name():
-    assert not ppl.is_valid_email(NO_NAME)
+def test_is_valid_email_no_at(invalid_emails):
+    assert not ppl.is_valid_email(invalid_emails["no_at"])
 
 
-def test_is_valid_no_domain():
-    assert not ppl.is_valid_email(NO_DOMAIN)
+def test_is_valid_email_no_name(invalid_emails):
+    assert not ppl.is_valid_email(invalid_emails["no_name"])
+
+
+def test_is_valid_email_no_domain(invalid_emails):
+    assert not ppl.is_valid_email(invalid_emails["no_domain"])
 
 
 def test_is_valid_no_sub_domain():
