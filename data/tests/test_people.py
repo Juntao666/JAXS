@@ -181,3 +181,8 @@ VALID_ROLES = ['ED', 'AU']
 @pytest.mark.skip('Skipping cause not done.')
 def test_update(temp_person):
     ppl.update('Buffalo Bill', 'UBuffalo', temp_person, VALID_ROLES)
+
+
+def test_create_person_bad_email():
+    with pytest.raises(ValueError, match="Invalid email address"):
+        ppl.create_person('Do not care about name', 'Or affiliation', 'bademail', 'TEST_ROLE_CODE')

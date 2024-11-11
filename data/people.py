@@ -201,6 +201,12 @@ def get_masthead() -> dict:
     return masthead
 
 
+def create_person(name, affiliation, email, role_code):
+    if '@' not in email:
+        raise ValueError("Invalid email address")
+    return {"name": name, "email": email, "role": role_code}
+
+
 def main():
     print(get_masthead())
 
