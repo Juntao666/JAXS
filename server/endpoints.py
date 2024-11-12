@@ -88,6 +88,24 @@ class ProjectName(Resource):
             raise wz.NotFound('Project name not found.')
 
 
+@api.route(TITLE_EP)
+class JournalTitle(Resource):
+    """
+    This class handles creating, reading, updating
+    and deleting the journal title.
+    """
+    def get(self):
+        """
+        Retrieve the journal title.
+        """
+        return {
+            TITLE_RESP: TITLE,
+            EDITOR_RESP: EDITOR,
+            DATE_RESP: DATE,
+            PUBLISHER_RESP: PUBLISHER,
+        }
+
+
 @api.route(PEOPLE_EP)
 class People(Resource):
     """
