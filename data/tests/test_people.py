@@ -1,4 +1,5 @@
 import pytest
+from unittest.mock import patch
 
 import data.people as ppl
 import data.roles as rls
@@ -13,7 +14,7 @@ DOMAIN_TOO_SHORT = 'kajshd@nyu.e'
 DOMAIN_TOO_LONG = 'kajshd@nyu.eedduu'
 
 TEMP_EMAIL = 'temp_person@temp.org'
-
+NAME = "name"
 
 @pytest.fixture(scope='function')
 def temp_person():
@@ -89,7 +90,9 @@ def test_create_bad_email():
                    'Or affiliation', 'bademail', TEST_ROLE_CODE)
 
 
-def test_read():
+@patch('data.people.read', autospec=True,
+       return_value={'id': {NAME: 'Joe Schmoe'}})
+def test_read(mock_read):
     people = ppl.read()
     assert isinstance(people, dict)
     assert len(people) > 0
@@ -103,7 +106,9 @@ def test_read_one(temp_person):
     assert ppl.read_one(temp_person) is not None
 
 
-def test_read_one_not_there():
+@patch('data.people.read_one', autospec=True,
+       return_value=None)
+def test_read_one_not_there(mock_read):
     assert ppl.read_one('Not an existing email!') is None
 
 

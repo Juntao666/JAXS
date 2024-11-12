@@ -1,7 +1,9 @@
 import data.roles as rls
+from unittest.mock import patch
 
-
-def test_get_roles():
+@patch('data.roles.get_roles', autospec=True,
+       return_value={"TEMP": "temp"})
+def test_get_roles(mock_read):
     roles = rls.get_roles()
     assert isinstance(roles, dict)
     assert len(roles) > 0

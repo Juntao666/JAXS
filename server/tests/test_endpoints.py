@@ -90,7 +90,7 @@ def test_update_person():
     assert resp_json[TEST_EMAIL]["affiliation"] == "new"
 
 
-@skip("Delete functionality test not yet implemented")
+@skip("Delete functionality test not done")
 def test_delete_person():
     email = ""
     resp = TEST_CLIENT.delete(f'{ep.PEOPLE_EP}/{email}')

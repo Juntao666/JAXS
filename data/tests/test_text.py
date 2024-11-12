@@ -1,4 +1,5 @@
 import pytest
+from unittest.mock import patch
 
 import data.text as txt
 
@@ -10,7 +11,9 @@ def temp_text():
     txt.delete(_key)
 
 
-def test_read():
+@patch('data.text.read', autospec=True,
+       return_value={"RandPage": {"title": "RandTitle"}})
+def test_read(mock_read):
     texts = txt.read()
     assert isinstance(texts, dict)
     for key in texts:
@@ -21,7 +24,9 @@ def test_read_one(temp_text):
     assert txt.read_one(temp_text) is not None
 
 
-def test_read_one_not_found():
+@patch('data.text.read_one', autospec=True,
+       return_value={})
+def test_read_one_not_found(mock_read):
     assert txt.read_one('Not a page key!') == {}
 
 
