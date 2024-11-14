@@ -18,7 +18,7 @@ def get_flds() -> dict:
 
 
 def get_fld_names() -> list:
-    return FIELDS.keys()
+    return list(FIELDS.keys())
 
 
 def get_disp_name(fld_nm: str) -> dict:
