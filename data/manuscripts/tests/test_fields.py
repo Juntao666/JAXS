@@ -11,6 +11,14 @@ def test_get_fld_names():
     assert isinstance(mflds.get_fld_names(), list)
 
 
+def test_get_referees():
+    assert isinstance(mflds.get_referees(), dict)
+
+
+def test_get_history():
+    assert isinstance(mflds.get_history(), list)
+
+
 @patch('data.manuscripts.fields.get_disp_name', autospec=True,
        return_value="Display_name")
 def test_get_disp_name(mock_read):
