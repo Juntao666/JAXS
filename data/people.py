@@ -3,7 +3,10 @@ This module interfaces to our user data.
 """
 import re
 
+import data.db_connect as dbc
 import data.roles as rls
+
+PEOPLE_COLLECT = 'people'
 
 MIN_USER_NAME_LEN = 2
 # fields
@@ -30,6 +33,8 @@ people_dict = {
     },
 }
 
+client = dbc.connect_db()
+print(f'{client=}')
 
 LOCAL_PART = r'[a-zA-Z0-9._%+-]+'
 DOMAIN_PART = r'(?=.{1,})(?!.*\.{2})[a-zA-Z0-9.-]+'
@@ -55,7 +60,8 @@ def read() -> dict:
 
         Note: each user email must be the key for another dictionary
     """
-    print('read() has been called')
+    people = dbc.read_dict(PEOPLE_COLLECT, EMAIL)
+    print(f'{people=}')
     return people_dict
 
 
