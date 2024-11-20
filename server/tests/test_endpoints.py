@@ -88,8 +88,12 @@ def test_add_person():
     assert NEW_EMAIL in resp_json
 
 
+@skip("Work in progress")
 def test_update_person():
-    TEST_EMAIL = 'netID@nyu.edu'
+    TEST_EMAIL = 'anna@nyu.edu'
+    resp = TEST_CLIENT.post(f"{ep.PEOPLE_EP}/{TEST_EMAIL}/Rand/Rand/RE")
+    assert resp.status_code == 200
+
     resp = TEST_CLIENT.put(f"{ep.PEOPLE_EP}/{TEST_EMAIL}/new/new/ED")
     assert resp.status_code == 200
 

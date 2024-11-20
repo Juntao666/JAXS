@@ -119,50 +119,50 @@ class People(Resource):
         return ppl.read()
 
 
-@api.route(f'{PEOPLE_EP}/<_id>')
+@api.route(f'{PEOPLE_EP}/<email>')
 class PersonDelete(Resource):
     @api.response(HTTPStatus.OK, 'Success.')
     @api.response(HTTPStatus.NOT_FOUND, 'No such person.')
-    def get(self, _id):
+    def get(self, email):
         """
         Retrieve a journal person.
         """
-        person = ppl.read_one(_id)
+        person = ppl.read_one(email)
         if person:
             return person, HTTPStatus.OK
         else:
-            raise wz.NotFound(f'No such record: {_id}')
+            raise wz.NotFound(f'No such record: {email}')
 
     @api.response(HTTPStatus.OK, 'Success.')
     @api.response(HTTPStatus.NOT_FOUND, 'No such person.')
-    def delete(self, _id):
-        ret = ppl.delete(_id)
+    def delete(self, email):
+        ret = ppl.delete(email)
         if ret is not None:
             return {'Deleted': ret}
         else:
-            raise wz.NotFound(f'No such person: {_id}')
+            raise wz.NotFound(f'No such person: {email}')
         # return {'Message': ret}
 
 
-@api.route(f"{PEOPLE_EP}/<_id>/<name>/<affiliation>/<role>")
+@api.route(f"{PEOPLE_EP}/<email>/<name>/<affiliation>/<role>")
 class Person(Resource):
-    def post(self, name: str, affiliation: str, _id: str, role: str):
+    def post(self, name: str, affiliation: str, email: str, role: str):
         """
         Add a person to the journal.
         """
-        success = ppl.create(name, affiliation, _id, role)
+        success = ppl.create(name, affiliation, email, role)
         if success:
-            return {"message": f"User with email '{_id}' was added."}, 200
+            return {"message": f"User with email '{email}' was added."}, 200
         else:
             return {"error": "Person cannot be added."}, 404
 
-    def put(self, name: str, affiliation: str, _id: str, role: str):
+    def put(self, name: str, affiliation: str, email: str, role: str):
         """
         update a person in the journal.
         """
-        success = ppl.update_person(name, affiliation, _id, role)
+        success = ppl.update_person(name, affiliation, email, role)
         if success:
-            return {"message": f"User with email '{_id}' was updated."}, 200
+            return {"message": f"User with email '{email}' was updated."}, 200
         else:
             return {"error": "Person cannot be updated."}, 404
 
