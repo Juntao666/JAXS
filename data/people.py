@@ -36,6 +36,21 @@ people_dict = {
 client = dbc.connect_db()
 print(f'{client=}')
 
+
+def add_people_to_db():
+    for email, person in people_dict.items():
+        existing_person = dbc.fetch_one(PEOPLE_COLLECT, {EMAIL: email})
+
+        if existing_person:
+            print(f"User with email {email} already exists.")
+            continue
+
+        dbc.create(PEOPLE_COLLECT, person)
+        print(f"Added {person[NAME]} to the database.")
+
+
+add_people_to_db()
+
 LOCAL_PART = r'[a-zA-Z0-9._%+-]+'
 DOMAIN_PART = r'(?=.{1,})(?!.*\.{2})[a-zA-Z0-9.-]+'
 TOP_LEVEL_DOMAIN = r'[a-zA-Z]{2,3}'
