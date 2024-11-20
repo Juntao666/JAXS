@@ -61,8 +61,8 @@ def read() -> dict:
         Note: each user email must be the key for another dictionary
     """
     people = dbc.read_dict(PEOPLE_COLLECT, EMAIL)
-    print(f'people.read: {people=}')
-    return people
+    print(f'{people=}')
+    return people_dict
 
 
 def read_one(email: str) -> dict:
@@ -70,19 +70,22 @@ def read_one(email: str) -> dict:
     Return a person record if email present in DB,
     else None.
     """
-    person = dbc.fetch_one(PEOPLE_COLLECT, {EMAIL: email})
-    return person
+    return people_dict.get(email)
 
 
-def delete(email):
+def delete(_id):
     """
         PARAM: _id (string)
         RET: returns _id (string) if successful, otherwise it returns None
 
         This function deletes a user from people_dict based on their email.
     """
-    print(f'{EMAIL=}, {email=}')
-    return dbc.delete(PEOPLE_COLLECT, {EMAIL: email})
+    people = read()
+    if _id in people:
+        del people[_id]
+        return _id
+    else:
+        return None
 
 
 def is_valid_person(name: str, affiliation: str, email: str,
@@ -122,13 +125,8 @@ def create(name: str, affiliation: str, email: str, role: str):
     if email in people_dict:
         raise ValueError(f"Adding duplicate email {email}")
     if is_valid_person(name, affiliation, email, role):
-        roles = []
-        if role:
-            roles.append(role)
-        person = {NAME: name, AFFILIATION: affiliation,
-                  EMAIL: email, ROLES: roles}
-        print(person)
-        dbc.create(PEOPLE_COLLECT, person)
+        people_dict[email] = {NAME: name, AFFILIATION: affiliation,
+                              EMAIL: email, ROLES: role}
     return email
 
 
@@ -142,13 +140,11 @@ def update_person(name: str, affiliation: str, email: str, roles: list):
 
         This function update a user's info to people_dict.
     """
-    people = dbc.read_dict(PEOPLE_COLLECT, EMAIL)
-    if email not in people:
+    if email not in people_dict:
         raise ValueError(f"User with email {email} does not exist")
     if is_valid_person(name, affiliation, email, roles):
-        update_dict = {NAME: name, AFFILIATION: affiliation,
-                       EMAIL: email, ROLES: roles}
-        dbc.update_doc(PEOPLE_COLLECT, {EMAIL: email}, update_dict)
+        people_dict[email] = {NAME: name, AFFILIATION: affiliation,
+                              EMAIL: email, ROLES: roles}
         return True
 
 

@@ -35,7 +35,6 @@ def connect_db():
         else:
             print("Connecting to Mongo locally.")
             client = pm.MongoClient()
-            print("Mongo locally connected")
 
 
 def create(collection, doc, db=SE_DB):
@@ -58,13 +57,11 @@ def fetch_one(collection, filt, db=SE_DB):
         return doc
 
 
-def delete(collection: str, filt: dict, db=SE_DB):
+def del_one(collection, filt, db=SE_DB):
     """
     Find with a filter and return on the first doc found.
     """
-    print(f'{filt=}')
-    del_result = client[db][collection].delete_one(filt)
-    return del_result.deleted_count
+    client[db][collection].delete_one(filt)
 
 
 def update_doc(collection, filters, update_dict, db=SE_DB):
