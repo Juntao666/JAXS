@@ -6,14 +6,18 @@ import data.roles as rls
 
 from data.roles import TEST_CODE as TEST_ROLE_CODE
 
-NO_AT = 'jkajsd'
-NO_NAME = '@kalsj'
-NO_DOMAIN = 'kajshd@'
+NO_AT="userexample.com"
+NO_NAME="@example.com"
+NO_DOMAIN="user@"
 NO_SUB_DOMAIN = 'kajshd@com'
 DOMAIN_TOO_SHORT = 'kajshd@nyu.e'
 DOMAIN_TOO_LONG = 'kajshd@nyu.eedduu'
 
+NONEXISTENT_EMAIL = "not-real@email.com"
 TEMP_EMAIL = 'temp_person@temp.org'
+
+VALID_ROLES = ['ED', 'AU']
+
 NAME = "name"
 
 @pytest.fixture(scope='function')
@@ -47,25 +51,16 @@ def test_doesnt_have_role(temp_person):
     assert not ppl.has_role(person_rec, 'Not a good role!')
 
 
-@pytest.fixture
-def invalid_emails():
-    return {
-        "no_at": "userexample.com",
-        "no_name": "@example.com",
-        "no_domain": "user@"
-    }
+def test_is_valid_email_no_at():
+    assert not ppl.is_valid_email(NO_AT)
 
 
-def test_is_valid_email_no_at(invalid_emails):
-    assert not ppl.is_valid_email(invalid_emails["no_at"])
+def test_is_valid_email_no_name():
+    assert not ppl.is_valid_email(NO_NAME)
 
 
-def test_is_valid_email_no_name(invalid_emails):
-    assert not ppl.is_valid_email(invalid_emails["no_name"])
-
-
-def test_is_valid_email_no_domain(invalid_emails):
-    assert not ppl.is_valid_email(invalid_emails["no_domain"])
+def test_is_valid_email_no_domain():
+    assert not ppl.is_valid_email(NO_DOMAIN)
 
 
 def test_is_valid_no_sub_domain():
@@ -124,22 +119,14 @@ def test_delete():
 NEW_EMAIL = "joe@nyu.edu"
 
 
-def test_create():
+def test_create(temp_person):
     people = ppl.read()
-    assert NEW_EMAIL not in people
-    _id = ppl.create("Joe Smith", "NYU", NEW_EMAIL, TEST_ROLE_CODE)
-    people = ppl.read()
-    assert NEW_EMAIL in people
-    ppl.delete(_id)
+    assert TEMP_EMAIL in people
 
 
-def test_create_duplicate():
+def test_create_duplicate(temp_person):
     with pytest.raises(ValueError):
-        _id = ppl.create('Do not care about name',
-                   'Or affiliation', NEW_EMAIL, TEST_ROLE_CODE)
-        ppl.create('Do not care about name',
-                   'Or affiliation', NEW_EMAIL, TEST_ROLE_CODE)
-    ppl.delete(_id)
+        ppl.create('Joe Smith', 'NYU', TEMP_EMAIL, TEST_ROLE_CODE)
 
 
 TEST_EMAIL = 'netID@nyu.edu'
@@ -170,19 +157,11 @@ def revert_update():
 
     
 def test_update_person(revert_update):
-    initial_data = revert_update
-
-    people = ppl.read_one(TEST_EMAIL)
-    assert people == initial_data
-
-    response = ppl.update_person("new", "new", TEST_EMAIL, ["ED", "RE"])
+    response = ppl.update_person("new", "new", TEST_EMAIL, VALID_ROLES)
     assert response
     
     people = ppl.read_one(TEST_EMAIL)
-    assert people != initial_data
-
-
-NONEXISTENT_EMAIL = "not-real@email.com"
+    assert people != revert_update
 
 
 def test_update_nonexistent_person():
@@ -197,7 +176,6 @@ def test_get_masthead():
     assert isinstance(mh, dict)
 
 
-VALID_ROLES = ['ED', 'AU']
 @pytest.mark.skip('Skipping cause not done.')
 def test_update(temp_person):
     ppl.update('Buffalo Bill', 'UBuffalo', temp_person, VALID_ROLES)
