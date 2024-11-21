@@ -11,9 +11,9 @@ ROLES = 'roles'
 AFFILIATION = 'affiliation'
 EMAIL = 'email'
 
-NO_AT="userexample.com"
-NO_NAME="@example.com"
-NO_DOMAIN="user@"
+NO_AT = "userexample.com"
+NO_NAME = "@example.com"
+NO_DOMAIN = "user@"
 NO_SUB_DOMAIN = 'kajshd@com'
 DOMAIN_TOO_SHORT = 'kajshd@nyu.e'
 DOMAIN_TOO_LONG = 'kajshd@nyu.eedduu'
@@ -31,7 +31,10 @@ VALID_ROLES = ['ED', 'AU']
 def temp_person():
     _id = ppl.create('Joe Smith', 'NYU', TEMP_EMAIL, TEST_ROLE_CODE)
     yield _id
-    ppl.delete(_id)
+    try:
+        ppl.delete(_id)
+    except Error:
+        print('Person already deleted.')
 
 
 def test_get_mh_fields():
@@ -114,26 +117,28 @@ def test_read_one_not_there(mock_read):
     assert ppl.read_one('Not an existing email!') is None
 
 
-def test_delete():
-    _id = ppl.create('someone', 'NYU', DEL_EMAIL, TEST_ROLE_CODE)
-    people = ppl.read()
-    old_len = len(people)
-
-    ppl.delete(_id)
-    
-    people = ppl.read()
-    assert len(people) < old_len
-    assert DEL_EMAIL not in people
+def test_exists(temp_person):
+    assert ppl.exists(temp_person)
 
 
-def test_create(temp_person):
-    people = ppl.read()
-    assert TEMP_EMAIL in people
+def test_doesnt_exist():
+    assert not ppl.exists('Not an existing email!')
+
+
+def test_delete(temp_person):
+    ppl.delete(temp_person)
+    assert not ppl.exists(temp_person)
+
+
+def test_create():
+    ppl.create('Joe Smith', 'NYU', NEW_EMAIL, "ED")
+    assert ppl.exists(NEW_EMAIL)
+    ppl.delete(NEW_EMAIL)
 
 
 def test_create_duplicate(temp_person):
     with pytest.raises(ValueError):
-        ppl.create('Joe Smith', 'NYU', TEMP_EMAIL, TEST_ROLE_CODE)
+        ppl.create('Joe Smith', 'NYU', TEMP_EMAIL, "ED")
 
 
 @pytest.fixture(scope='function')
@@ -144,19 +149,19 @@ def revert_update():
     yield person_rec
 
     response = ppl.update_person(
-        person_rec[NAME], 
-        person_rec[AFFILIATION], 
-        TEST_EMAIL, 
+        person_rec[NAME],
+        person_rec[AFFILIATION],
+        TEST_EMAIL,
         person_rec[ROLES]
     )
 
     ppl.delete(_id)
 
-    
+
 def test_update_person(revert_update):
     response = ppl.update_person("new", "new", TEST_EMAIL, VALID_ROLES)
     assert response
-    
+
     people = ppl.read_one(TEST_EMAIL)
     assert people != revert_update
 

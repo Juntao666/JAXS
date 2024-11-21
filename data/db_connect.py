@@ -37,6 +37,12 @@ def connect_db():
             client = pm.MongoClient()
 
 
+def convert_mongo_id(doc: dict):
+    if MONGO_ID in doc:
+        # Convert mongo ID to a string so it works as JSON
+        doc[MONGO_ID] = str(doc[MONGO_ID])
+
+
 def create(collection, doc, db=SE_DB):
     """
     Insert a single doc into collection.
@@ -45,15 +51,13 @@ def create(collection, doc, db=SE_DB):
     return client[db][collection].insert_one(doc)
 
 
-def fetch_one(collection, filt, db=SE_DB):
+def read_one(collection, filt, db=SE_DB):
     """
     Find with a filter and return on the first doc found.
     Return None if not found.
     """
     for doc in client[db][collection].find(filt):
-        if MONGO_ID in doc:
-            # Convert mongo ID to a string so it works as JSON
-            doc[MONGO_ID] = str(doc[MONGO_ID])
+        convert_mongo_id(doc)
         return doc
 
 
@@ -66,7 +70,7 @@ def delete(collection: str, filt: dict, db=SE_DB):
     return del_result.deleted_count
 
 
-def update_doc(collection, filters, update_dict, db=SE_DB):
+def update(collection, filters, update_dict, db=SE_DB):
     return client[db][collection].update_one(filters, {'$set': update_dict})
 
 

@@ -54,8 +54,12 @@ def read_one(email: str) -> dict:
     Return a person record if email present in DB,
     else None.
     """
-    person = dbc.fetch_one(PEOPLE_COLLECT, {EMAIL: email})
+    person = dbc.read_one(PEOPLE_COLLECT, {EMAIL: email})
     return person
+
+
+def exists(email: str) -> bool:
+    return read_one(email) is not None
 
 
 def delete(email):
@@ -103,8 +107,7 @@ def create(name: str, affiliation: str, email: str, role: str):
 
         This function adds a user to people_dict.
     """
-    people = dbc.read_dict(PEOPLE_COLLECT, EMAIL)
-    if email in people:
+    if exists(email):
         raise ValueError(f"Adding duplicate email {email}")
     if is_valid_person(name, affiliation, email, role):
         roles = []
@@ -127,13 +130,12 @@ def update_person(name: str, affiliation: str, email: str, roles: list):
 
         This function update a user's info to people_dict.
     """
-    people = dbc.read_dict(PEOPLE_COLLECT, EMAIL)
-    if email not in people:
+    if not exists(email):
         raise ValueError(f"User with email {email} does not exist")
     if is_valid_person(name, affiliation, email, roles=roles):
         update_dict = {NAME: name, AFFILIATION: affiliation,
                        EMAIL: email, ROLES: roles}
-        dbc.update_doc(PEOPLE_COLLECT, {EMAIL: email}, update_dict)
+        dbc.update(PEOPLE_COLLECT, {EMAIL: email}, update_dict)
         return True
 
 
