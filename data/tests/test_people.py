@@ -127,22 +127,19 @@ NEW_EMAIL = "joe@nyu.edu"
 def test_create():
     people = ppl.read()
     assert NEW_EMAIL not in people
-    ppl.create("Joe Smith", "NYU", NEW_EMAIL, TEST_ROLE_CODE)
+    _id = ppl.create("Joe Smith", "NYU", NEW_EMAIL, TEST_ROLE_CODE)
     people = ppl.read()
     assert NEW_EMAIL in people
-
-
-def test_duplicate_person():
-    with pytest.raises(ValueError):
-        ppl.create("Do Not Care", "Do Not Care", ppl.TEST_EMAIL, TEST_ROLE_CODE)
-    people = ppl.read()
-    assert NEW_EMAIL in people
+    ppl.delete(_id)
 
 
 def test_create_duplicate():
     with pytest.raises(ValueError):
+        _id = ppl.create('Do not care about name',
+                   'Or affiliation', NEW_EMAIL, TEST_ROLE_CODE)
         ppl.create('Do not care about name',
-                   'Or affiliation', ppl.TEST_EMAIL, TEST_ROLE_CODE)
+                   'Or affiliation', NEW_EMAIL, TEST_ROLE_CODE)
+    ppl.delete(_id)
 
 
 TEST_EMAIL = 'netID@nyu.edu'
@@ -158,13 +155,31 @@ TEST_EMAIL_DATA = {
 }
 
 
-def test_update_person():
-    people = ppl.read()
-    assert people[TEST_EMAIL] == TEST_EMAIL_DATA
-    response = ppl.update_person("new", "new", TEST_EMAIL, "ED")
-    people = ppl.read()
+@pytest.fixture(scope='function')
+def revert_update():
+    person_rec = ppl.read_one(TEST_EMAIL)
+
+    yield person_rec
+
+    response = ppl.update_person(
+        person_rec["name"], 
+        person_rec["affiliation"], 
+        TEST_EMAIL, 
+        person_rec["roles"]
+    )
+
+    
+def test_update_person(revert_update):
+    initial_data = revert_update
+
+    people = ppl.read_one(TEST_EMAIL)
+    assert people == initial_data
+
+    response = ppl.update_person("new", "new", TEST_EMAIL, ["ED", "RE"])
     assert response
-    assert people[TEST_EMAIL] != TEST_EMAIL_DATA
+    
+    people = ppl.read_one(TEST_EMAIL)
+    assert people != initial_data
 
 
 NONEXISTENT_EMAIL = "not-real@email.com"
@@ -172,7 +187,7 @@ NONEXISTENT_EMAIL = "not-real@email.com"
 
 def test_update_nonexistent_person():
     with pytest.raises(ValueError):
-        ppl.update_person("Do Not Care", "Do Not Care", NONEXISTENT_EMAIL, "ED")
+        ppl.update_person("Do Not Care", "Do Not Care", NONEXISTENT_EMAIL, ["ED"])
     people = ppl.read()
     assert NONEXISTENT_EMAIL not in people
 

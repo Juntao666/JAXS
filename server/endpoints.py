@@ -150,8 +150,8 @@ class Person(Resource):
         """
         Add a person to the journal.
         """
-        success = ppl.create(name, affiliation, email, role)
-        if success:
+        _id = ppl.create(name, affiliation, email, role)
+        if _id is not None:
             return {"message": f"User with email '{email}' was added."}, 200
         else:
             return {"error": "Person cannot be added."}, 404

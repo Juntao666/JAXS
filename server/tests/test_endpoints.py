@@ -78,10 +78,20 @@ def test_get_people():
         assert NAME in person
 
 
-def test_add_person():
+@pytest.fixture(scope="function")
+def add_person():
     NEW_EMAIL = "test@nyu.edu"
     resp = TEST_CLIENT.post(f"{ep.PEOPLE_EP}/{NEW_EMAIL}/Random/Random/RE")
     assert resp.status_code == 200
+    
+    yield NEW_EMAIL
+    
+    delete_resp = TEST_CLIENT.delete(f"{ep.PEOPLE_EP}/{NEW_EMAIL}")
+    assert delete_resp.status_code == 200
+
+    
+def test_add_person(add_person):
+    NEW_EMAIL = add_person
 
     people = TEST_CLIENT.get(ep.PEOPLE_EP)
     resp_json = people.get_json()

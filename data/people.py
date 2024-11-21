@@ -134,7 +134,8 @@ def create(name: str, affiliation: str, email: str, role: str):
 
         This function adds a user to people_dict.
     """
-    if email in people_dict:
+    people = dbc.read_dict(PEOPLE_COLLECT, EMAIL)
+    if email in people:
         raise ValueError(f"Adding duplicate email {email}")
     if is_valid_person(name, affiliation, email, role):
         roles = []
@@ -160,7 +161,7 @@ def update_person(name: str, affiliation: str, email: str, roles: list):
     people = dbc.read_dict(PEOPLE_COLLECT, EMAIL)
     if email not in people:
         raise ValueError(f"User with email {email} does not exist")
-    if is_valid_person(name, affiliation, email, roles):
+    if is_valid_person(name, affiliation, email, roles=roles):
         update_dict = {NAME: name, AFFILIATION: affiliation,
                        EMAIL: email, ROLES: roles}
         dbc.update_doc(PEOPLE_COLLECT, {EMAIL: email}, update_dict)
