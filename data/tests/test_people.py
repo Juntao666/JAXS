@@ -6,6 +6,11 @@ import data.roles as rls
 
 from data.roles import TEST_CODE as TEST_ROLE_CODE
 
+NAME = 'name'
+ROLES = 'roles'
+AFFILIATION = 'affiliation'
+EMAIL = 'email'
+
 NO_AT="userexample.com"
 NO_NAME="@example.com"
 NO_DOMAIN="user@"
@@ -15,10 +20,12 @@ DOMAIN_TOO_LONG = 'kajshd@nyu.eedduu'
 
 NONEXISTENT_EMAIL = "not-real@email.com"
 TEMP_EMAIL = 'temp_person@temp.org'
+NEW_EMAIL = "joe@nyu.edu"
+TEST_EMAIL = 'netID@nyu.edu'
+DEL_EMAIL = 'delete@nyu.edu'
 
 VALID_ROLES = ['ED', 'AU']
 
-NAME = "name"
 
 @pytest.fixture(scope='function')
 def temp_person():
@@ -108,15 +115,15 @@ def test_read_one_not_there(mock_read):
 
 
 def test_delete():
+    _id = ppl.create('someone', 'NYU', DEL_EMAIL, TEST_ROLE_CODE)
     people = ppl.read()
     old_len = len(people)
-    ppl.delete(ppl.DEL_EMAIL)
+
+    ppl.delete(_id)
+    
     people = ppl.read()
     assert len(people) < old_len
-    assert ppl.DEL_EMAIL not in people
-
-
-NEW_EMAIL = "joe@nyu.edu"
+    assert DEL_EMAIL not in people
 
 
 def test_create(temp_person):
@@ -129,19 +136,6 @@ def test_create_duplicate(temp_person):
         ppl.create('Joe Smith', 'NYU', TEMP_EMAIL, TEST_ROLE_CODE)
 
 
-TEST_EMAIL = 'netID@nyu.edu'
-NAME = 'name'
-ROLES = 'roles'
-AFFILIATION = 'affiliation'
-EMAIL = 'email'
-TEST_EMAIL_DATA = {
-    NAME: 'Person Created',
-    ROLES: [rls.ED_CODE],
-    AFFILIATION: 'NYU',
-    EMAIL: TEST_EMAIL,
-}
-
-
 @pytest.fixture(scope='function')
 def revert_update():
     person_rec = ppl.read_one(TEST_EMAIL)
@@ -149,10 +143,10 @@ def revert_update():
     yield person_rec
 
     response = ppl.update_person(
-        person_rec["name"], 
-        person_rec["affiliation"], 
+        person_rec[NAME], 
+        person_rec[AFFILIATION], 
         TEST_EMAIL, 
-        person_rec["roles"]
+        person_rec[ROLES]
     )
 
     

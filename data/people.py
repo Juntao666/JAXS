@@ -15,41 +15,10 @@ ROLES = 'roles'
 AFFILIATION = 'affiliation'
 EMAIL = 'email'
 
-TEST_EMAIL = 'netID@nyu.edu'
-DEL_EMAIL = 'delete@nyu.edu'
-
-people_dict = {
-    TEST_EMAIL: {
-        NAME: 'Person Created',
-        ROLES: [rls.ED_CODE],
-        AFFILIATION: 'NYU',
-        EMAIL: TEST_EMAIL,
-    },
-    DEL_EMAIL: {
-        NAME: 'Person Deleted',
-        ROLES: [rls.CE_CODE],
-        AFFILIATION: 'NYU',
-        EMAIL: DEL_EMAIL,
-    },
-}
 
 client = dbc.connect_db()
 print(f'{client=}')
 
-
-def add_people_to_db():
-    for email, person in people_dict.items():
-        existing_person = dbc.fetch_one(PEOPLE_COLLECT, {EMAIL: email})
-
-        if existing_person:
-            print(f"User with email {email} already exists.")
-            continue
-
-        dbc.create(PEOPLE_COLLECT, person)
-        print(f"Added {person[NAME]} to the database.")
-
-
-add_people_to_db()
 
 LOCAL_PART = r'[a-zA-Z0-9._%+-]+'
 DOMAIN_PART = r'(?=.{1,})(?!.*\.{2})[a-zA-Z0-9.-]+'
