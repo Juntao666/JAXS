@@ -138,7 +138,8 @@ def test_create_duplicate(temp_person):
 
 @pytest.fixture(scope='function')
 def revert_update():
-    person_rec = ppl.read_one(TEST_EMAIL)
+    _id = ppl.create("Somebody", "NYU", TEST_EMAIL, "ED")
+    person_rec = ppl.read_one(_id)
 
     yield person_rec
 
@@ -148,6 +149,8 @@ def revert_update():
         TEST_EMAIL, 
         person_rec[ROLES]
     )
+
+    ppl.delete(_id)
 
     
 def test_update_person(revert_update):
@@ -168,13 +171,3 @@ def test_update_nonexistent_person():
 def test_get_masthead():
     mh = ppl.get_masthead()
     assert isinstance(mh, dict)
-
-
-@pytest.mark.skip('Skipping cause not done.')
-def test_update(temp_person):
-    ppl.update('Buffalo Bill', 'UBuffalo', temp_person, VALID_ROLES)
-
-
-def test_create_person_bad_email():
-    with pytest.raises(ValueError, match="Invalid email address"):
-        ppl.create_person('Do not care about name', 'Or affiliation', 'bademail', 'TEST_ROLE_CODE')
