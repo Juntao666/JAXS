@@ -199,7 +199,7 @@ def get_masthead() -> dict:
 
 
 def create_person(name, affiliation, email, role_code):
-    if '@' not in email:
+    if not is_valid_email(email):
         raise ValueError("Invalid email address")
     return {"name": name, "email": email, "role": role_code}
 
