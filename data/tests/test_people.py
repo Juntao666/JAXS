@@ -158,12 +158,19 @@ def revert_update():
     ppl.delete(_id)
 
 
-def test_update_person(revert_update):
-    response = ppl.update_person("new", "new", TEST_EMAIL, VALID_ROLES)
-    assert response
+TEST_UPDATE_NAME = 'Buffalo Bill'
 
-    people = ppl.read_one(TEST_EMAIL)
-    assert people != revert_update
+
+def test_update(temp_person):
+    ppl.update_person(TEST_UPDATE_NAME, 'UBuffalo', temp_person, VALID_ROLES)
+    updated_rec = ppl.read_one(temp_person)
+    assert updated_rec[ppl.NAME] == TEST_UPDATE_NAME
+
+
+def test_update_not_there(temp_person):
+    with pytest.raises(ValueError):
+        ppl.update_person('Will Fail', 'University of the Void',
+                   'Non-existent email', VALID_ROLES)
 
 
 def test_update_nonexistent_person():
