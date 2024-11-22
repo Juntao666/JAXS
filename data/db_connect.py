@@ -106,3 +106,11 @@ def read_dict(collection, key, db=SE_DB, no_id=True) -> dict:
     for rec in recs:
         recs_as_dict[rec[key]] = rec
     return recs_as_dict
+
+
+def close_db():
+    global client
+    if client is not None:
+        client.close()
+        client = None
+        print("MongoDB connection closed.")
