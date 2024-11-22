@@ -26,6 +26,8 @@ DEL_EMAIL = 'delete@nyu.edu'
 
 VALID_ROLES = ['ED', 'AU']
 
+TEST_UPDATE_NAME = 'Buffalo Bill'
+
 
 @pytest.fixture(scope='function')
 def temp_person():
@@ -89,12 +91,6 @@ def test_is_valid_email():
     assert ppl.is_valid_email('sl9052@nyu.edu')
 
 
-def test_create_bad_email():
-    with pytest.raises(ValueError):
-        ppl.create('Do not care about name',
-                   'Or affiliation', 'bademail', TEST_ROLE_CODE)
-
-
 @patch('data.people.read', autospec=True,
        return_value={'id': {NAME: 'Joe Schmoe'}})
 def test_read(mock_read):
@@ -141,24 +137,10 @@ def test_create_duplicate(temp_person):
         ppl.create('Joe Smith', 'NYU', TEMP_EMAIL, "ED")
 
 
-@pytest.fixture(scope='function')
-def revert_update():
-    _id = ppl.create("Somebody", "NYU", TEST_EMAIL, "ED")
-    person_rec = ppl.read_one(_id)
-
-    yield person_rec
-
-    response = ppl.update_person(
-        person_rec[NAME],
-        person_rec[AFFILIATION],
-        TEST_EMAIL,
-        person_rec[ROLES]
-    )
-
-    ppl.delete(_id)
-
-
-TEST_UPDATE_NAME = 'Buffalo Bill'
+def test_create_bad_email():
+    with pytest.raises(ValueError):
+        ppl.create('Do not care about name',
+                   'Or affiliation', 'bademail', TEST_ROLE_CODE)
 
 
 def test_update(temp_person):
@@ -167,17 +149,13 @@ def test_update(temp_person):
     assert updated_rec[ppl.NAME] == TEST_UPDATE_NAME
 
 
-def test_update_not_there(temp_person):
-    with pytest.raises(ValueError):
-        ppl.update_person('Will Fail', 'University of the Void',
-                   'Non-existent email', VALID_ROLES)
-
-
 def test_update_nonexistent_person():
-    with pytest.raises(ValueError):
-        ppl.update_person("Do Not Care", "Do Not Care", NONEXISTENT_EMAIL, ["ED"])
     people = ppl.read()
     assert NONEXISTENT_EMAIL not in people
+
+    with pytest.raises(ValueError):
+        ppl.update_person('Will Fail', 'University of the Void',
+                   NONEXISTENT_EMAIL, VALID_ROLES)
 
 
 def test_get_masthead():
