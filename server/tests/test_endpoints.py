@@ -46,6 +46,7 @@ def test_read(mock_read):
         assert isinstance(_id, str)
         assert len(_id) > 0
         assert NAME in person
+        assert person[NAME] == 'Joe Schmoe'
 
 
 @patch('data.people.read_one', autospec=True,
