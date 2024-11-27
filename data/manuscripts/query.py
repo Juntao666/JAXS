@@ -12,3 +12,26 @@ VALID_STATES = [
     SUBMITTED,
 ]
 
+
+def get_states() -> list:
+    return VALID_STATES
+
+
+def is_valid_state(state: str) -> bool:
+    return state in VALID_STATES
+
+
+# actions:
+ACCEPT = 'ACC'
+ASSIGN_REF = 'ARF'
+DONE = 'DON'
+REJECT = 'REJ'
+# for testing:
+TEST_ACTION = ACCEPT
+
+VALID_ACTIONS = [
+    ACCEPT,
+    ASSIGN_REF,
+    DONE,
+    REJECT,
+]
