@@ -55,3 +55,18 @@ def test_handle_action_valid_return():
         for action in mqry.get_actions():
             new_state = mqry.handle_action(state, action)
             assert mqry.is_valid_state(new_state)
+
+
+#  might be kind of useless
+def test_handle_action_default_editor_move():
+    goal_state = mqry.ED_MOVING
+    for state in mqry.get_states():
+        new_state = mqry.handle_action(state, mqry.EDITOR_MOVE, goal_state)
+        assert new_state == goal_state
+
+
+def test_handle_action__editor_move():
+    for goal_state in mqry.get_states():
+        for curr_state in mqry.get_states():
+            new_state = mqry.handle_action(curr_state, mqry.EDITOR_MOVE, goal_state)
+            assert new_state == goal_state

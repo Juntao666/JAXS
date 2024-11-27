@@ -8,7 +8,8 @@ AU_REVISIONS = 'ARN'
 ED_REV = 'ERV'
 FORMATTING = 'FOR'
 PUBLISHED = 'PUB'
-WITHDRAWN = "WDN"
+WITHDRAWN = 'WDN'
+ED_MOVING = 'MOV'  # extra state to implement editor move
 TEST_STATE = SUBMITTED
 
 VALID_STATES = [
@@ -22,6 +23,7 @@ VALID_STATES = [
     FORMATTING,
     PUBLISHED,
     WITHDRAWN,
+    ED_MOVING,  # extra state to implement editor move
 ]
 
 
@@ -39,6 +41,7 @@ ASSIGN_REF = 'ARF'
 REJECT = 'REJ'
 ASSIGN_W_REV = 'AWR'
 REMOVE_REF = 'RRF'
+EDITOR_MOVE = "EDM"
 
 # au action
 DONE = 'DON'
@@ -59,6 +62,7 @@ VALID_ACTIONS = [
     WITHDRAW,
     REMOVE_REF,  # not sure how this works
     SUBMIT_REV,
+    EDITOR_MOVE,
 ]
 
 
@@ -70,12 +74,20 @@ def is_valid_action(action: str) -> bool:
     return action in VALID_ACTIONS
 
 
-def handle_action(curr_state, action) -> str:
+def handle_action(curr_state, action, goal_state=ED_MOVING) -> str:
     if not is_valid_state(curr_state):
         raise ValueError(f'Invalid state: {curr_state}')
+    if not is_valid_state(goal_state):
+        raise ValueError(f'Invalid state: {goal_state}')
     if not is_valid_action(action):
         raise ValueError(f'Invalid action: {action}')
+
     new_state = curr_state
+
+    if action == EDITOR_MOVE:
+        new_state = goal_state
+        return new_state
+
     if curr_state == SUBMITTED:
         if action == ASSIGN_REF:
             new_state = IN_REF_REV
