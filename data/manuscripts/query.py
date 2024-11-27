@@ -3,6 +3,12 @@ COPY_EDIT = 'CED'
 IN_REF_REV = 'REV'
 REJECTED = 'REJ'
 SUBMITTED = 'SUB'
+AU_REVIEW = 'ARV'
+AU_REVISIONS = 'ARN'
+ED_REV = 'ERV'
+FORMATTING = 'FOR'
+PUBLISHED = 'PUB'
+WITHDRAWN = "WDN"
 TEST_STATE = SUBMITTED
 
 VALID_STATES = [
@@ -10,6 +16,12 @@ VALID_STATES = [
     IN_REF_REV,
     REJECTED,
     SUBMITTED,
+    AU_REVIEW,
+    AU_REVISIONS,
+    ED_REV,
+    FORMATTING,
+    PUBLISHED,
+    WITHDRAWN,
 ]
 
 
@@ -21,11 +33,20 @@ def is_valid_state(state: str) -> bool:
     return state in VALID_STATES
 
 
-# actions:
+# ed actions:
 ACCEPT = 'ACC'
 ASSIGN_REF = 'ARF'
-DONE = 'DON'
 REJECT = 'REJ'
+ASSIGN_W_REV = 'AWR'
+REMOVE_REF = 'RRF'
+
+# au action
+DONE = 'DON'
+WITHDRAW = 'WDW'
+
+# ref action
+SUBMIT_REV = 'SRV'
+
 # for testing:
 TEST_ACTION = ACCEPT
 
@@ -34,6 +55,10 @@ VALID_ACTIONS = [
     ASSIGN_REF,
     DONE,
     REJECT,
+    ASSIGN_W_REV,
+    WITHDRAW,
+    REMOVE_REF,  # not sure how this works
+    SUBMIT_REV,
 ]
 
 
@@ -56,9 +81,40 @@ def handle_action(curr_state, action) -> str:
             new_state = IN_REF_REV
         elif action == REJECT:
             new_state = REJECTED
+        elif action == WITHDRAW:
+            new_state = WITHDRAWN
     elif curr_state == IN_REF_REV:
         if action == ACCEPT:
             new_state = COPY_EDIT
         elif action == REJECT:
             new_state = REJECTED
+        elif action == ASSIGN_W_REV:
+            new_state = AU_REVISIONS
+        elif action == WITHDRAW:
+            new_state = WITHDRAWN
+    elif curr_state == AU_REVISIONS:
+        if action == DONE:
+            new_state = ED_REV
+        elif action == WITHDRAW:
+            new_state = WITHDRAWN
+    elif curr_state == ED_REV:
+        if action == ACCEPT:
+            new_state = COPY_EDIT
+        elif action == WITHDRAW:
+            new_state = WITHDRAWN
+    elif curr_state == COPY_EDIT:
+        if action == DONE:
+            new_state = AU_REVIEW
+        elif action == WITHDRAW:
+            new_state = WITHDRAWN
+    elif curr_state == AU_REVIEW:
+        if action == DONE:
+            new_state = FORMATTING
+        elif action == WITHDRAW:
+            new_state = WITHDRAWN
+    elif curr_state == FORMATTING:
+        if action == DONE:
+            new_state = PUBLISHED
+        elif action == WITHDRAW:
+            new_state = WITHDRAWN
     return new_state
