@@ -31,10 +31,10 @@ TEST_UPDATE_NAME = 'Buffalo Bill'
 
 @pytest.fixture(scope='function')
 def temp_person():
-    _id = ppl.create('Joe Smith', 'NYU', TEMP_EMAIL, TEST_ROLE_CODE)
-    yield _id
+    email = ppl.create('Joe Smith', 'NYU', TEMP_EMAIL, TEST_ROLE_CODE)
+    yield email
     try:
-        ppl.delete(_id)
+        ppl.delete(email)
     except Error:
         print('Person already deleted.')
 
@@ -98,8 +98,8 @@ def test_read(mock_read):
     assert isinstance(people, dict)
     assert len(people) > 0
     # check for string IDs:
-    for _id, person in people.items():
-        assert isinstance(_id, str)
+    for email, person in people.items():
+        assert isinstance(email, str)
         assert ppl.NAME in person
 
 
