@@ -82,7 +82,7 @@ def read() -> dict:
     return text
 
 
-def read_one(key: str):
+def read_one(key: str) -> dict:
     """
     Retrieves the page dictionary for a key.
     Arguments:
