@@ -19,6 +19,10 @@ def test_get_history():
     assert isinstance(mflds.get_history(), list)
 
 
+def test_get_states():
+    assert isinstance(mflds.get_states(), list)
+
+
 @patch('data.manuscripts.fields.get_disp_name', autospec=True,
        return_value="Display_name")
 def test_get_disp_name(mock_read):

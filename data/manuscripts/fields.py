@@ -1,3 +1,5 @@
+import data.manuscripts.query as qry
+
 # fields
 
 TITLE = 'title'
@@ -6,8 +8,10 @@ AUTHOR = 'author'
 DISP_AUTHOR = 'disp_author'
 AUTHOR_EMAIL = 'author@domain.com'
 DISP_AUTHOR_EMAIL = 'disp_author_email'
-STATE = 'state'  # (INT or STR)
+STATE = 'state'  # STR
 DISP_STATE = 'disp_state'
+VAL_STATE = 'val_state'
+DISP_VAL_STATE = 'disp_val_state'
 TEXT = 'text'
 DISP_TEXT = 'disp_text'
 ABSTRACT = 'abstract'
@@ -24,6 +28,8 @@ TEST_FLD_AU_EM = AUTHOR_EMAIL
 TEST_FLD_DISP_AU_EM = 'AuthorEmail@domain.com'
 TEST_FLD_ST = STATE
 TEST_FLD_DISP_ST = 'State'
+TEST_FLD_VAL_ST = VAL_STATE
+TEST_FLD_VAL_DISP_ST = qry.VALID_STATES
 TEST_FLD_TXT = TEXT
 TEST_FLD_DISP_TXT = 'Text'
 TEST_FLD_ABS = ABSTRACT
@@ -67,6 +73,7 @@ FIELDS = {
     },
     STATE: {
         DISP_STATE: TEST_FLD_DISP_ST,
+        DISP_VAL_STATE: TEST_FLD_VAL_ST,
     },
     TEXT: {
         DISP_TEXT: TEST_FLD_DISP_TXT,
@@ -78,10 +85,10 @@ FIELDS = {
         DISP_EDITOR: TEST_FLD_DISP_ED,
     },
     REFEREE: {
-        DISP_REF: TEST_FLD_DISP_REF
+        DISP_REF: TEST_FLD_DISP_REF,
     },
     HISTORY: {
-        DISP_HIS: TEST_FLD_DISP_HIS
+        DISP_HIS: TEST_FLD_DISP_HIS,
     },
 }
 
@@ -105,6 +112,10 @@ def get_history() -> list:
 
 def get_referees() -> dict:
     return referee_dict
+
+
+def get_states() -> list:
+    return qry.VALID_STATES
 
 
 def main():
