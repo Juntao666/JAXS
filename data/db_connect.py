@@ -29,9 +29,11 @@ def connect_db():
                 raise ValueError('You must set your password '
                                  + 'to use Mongo in the cloud.')
             print("Connecting to Mongo in the cloud.")
-            client = pm.MongoClient(f'mongodb+srv://gcallah:{password}'
-                                    + '@koukoumongo1.yud9b.mongodb.net/'
+            client = pm.MongoClient(f'mongodb+srv://annateng8000:{password}'
+                                    + '@jaxscluster1.qbdn4.mongodb.net/'
                                     + '?retryWrites=true&w=majority')
+            # mongodb+srv://annateng8000:<db_password>@jaxscluster1.qbdn4.
+            # mongodb.net/?retryWrites=true&w=majority&appName=JAXSCluster1
         else:
             print("Connecting to Mongo locally.")
             client = pm.MongoClient()
