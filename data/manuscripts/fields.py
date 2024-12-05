@@ -113,7 +113,9 @@ def get_referees() -> dict:
 
 
 def is_valid_state(state: str) -> bool:
-    valid_states = get_states()
+    import data.manuscripts.query as qry
+
+    valid_states = qry.VALID_STATES
     if state in valid_states:
         return True
     else:
@@ -121,7 +123,9 @@ def is_valid_state(state: str) -> bool:
 
 
 def is_valid_verdict(verdict: str) -> bool:
-    valid_verdicts = get_verdicts()
+    import data.manuscripts.query as qry
+
+    valid_verdicts = qry.REF_VERDICT
     if verdict in valid_verdicts:
         return True
     else:
