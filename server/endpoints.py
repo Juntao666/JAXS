@@ -120,7 +120,7 @@ class People(Resource):
 
 
 @api.route(f'{PEOPLE_EP}/<email>')
-class PersonDelete(Resource):
+class Person(Resource):
     @api.response(HTTPStatus.OK, 'Success.')
     @api.response(HTTPStatus.NOT_FOUND, 'No such person.')
     def get(self, email):
@@ -142,29 +142,6 @@ class PersonDelete(Resource):
         else:
             raise wz.NotFound(f'No such person: {email}')
         # return {'Message': ret}
-
-
-@api.route(f"{PEOPLE_EP}/<email>/<name>/<affiliation>/<role>")
-class Person(Resource):
-    def post(self, name: str, affiliation: str, email: str, role: str):
-        """
-        Add a person to the journal.
-        """
-        _id = ppl.create(name, affiliation, email, role)
-        if _id is not None:
-            return {"message": f"User with email '{email}' was added."}, 200
-        else:
-            return {"error": "Person cannot be added."}, 404
-
-    def put(self, name: str, affiliation: str, email: str, role: str):
-        """
-        update a person in the journal.
-        """
-        success = ppl.update_person(name, affiliation, email, role)
-        if success:
-            return {"message": f"User with email '{email}' was updated."}, 200
-        else:
-            return {"error": "Person cannot be updated."}, 404
 
 
 PEOPLE_CREATE_FLDS = api.model('AddNewPeopleEntry', {
@@ -198,6 +175,39 @@ class PeopleCreate(Resource):
                                    f'{err=}')
         return {
             MESSAGE: 'Person added!',
+            RETURN: ret,
+        }
+
+
+PEOPLE_UPDATE_FLDS = api.model('UpdatePeopleEntry', {
+    ppl.NAME: fields.String,
+    ppl.EMAIL: fields.String,
+    ppl.AFFILIATION: fields.String,
+    ppl.ROLES: fields.String,
+})
+
+
+@api.route(f'{PEOPLE_EP}/update')
+class PeopleUpdate(Resource):
+    """
+    Update a person in the journal db.
+    """
+    @api.response(HTTPStatus.OK, 'Success')
+    @api.response(HTTPStatus.NOT_ACCEPTABLE, 'Not acceptable')
+    @api.expect(PEOPLE_UPDATE_FLDS)
+    def post(self):
+        """ updates a person """
+        try:
+            name = request.json.get(ppl.NAME)
+            affiliation = request.json.get(ppl.AFFILIATION)
+            email = request.json.get(ppl.EMAIL)
+            role = request.json.get(ppl.ROLES)
+            ret = ppl.update_person(name, affiliation, email, role)
+        except Exception as err:
+            raise wz.NotAcceptable(f'Could not update person: '
+                                   f'{err=}')
+        return {
+            MESSAGE: 'Person updated!',
             RETURN: ret,
         }
 

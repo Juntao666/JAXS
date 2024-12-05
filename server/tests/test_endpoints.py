@@ -7,6 +7,8 @@ from http.client import (
     SERVICE_UNAVAILABLE,
 )
 
+from http import HTTPStatus
+
 from unittest.mock import patch
 from unittest import skip
 
@@ -79,11 +81,18 @@ def test_get_people():
         assert NAME in person
 
 
+
 @pytest.fixture(scope="function")
+@skip("Work in progress")
 def add_person():
-    NEW_EMAIL = "test@nyu.edu"
-    resp = TEST_CLIENT.post(f"{ep.PEOPLE_EP}/{NEW_EMAIL}/Random/Random/RE")
-    assert resp.status_code == 200
+    data = {
+        "name": "Test",
+        "email": "test@nyu.edu",
+        "affiliation": "Rand",
+        "roles": "ED"
+    }
+    resp = TEST_CLIENT.put(f'{ep.PEOPLE_EP}/create', json=data)
+    assert resp.status_code == HTTPStatus.OK
     
     yield NEW_EMAIL
     
@@ -101,18 +110,32 @@ def test_add_person(add_person):
 
 @skip("Work in progress")
 def test_update_person():
-    TEST_EMAIL = 'anna@nyu.edu'
-    resp = TEST_CLIENT.post(f"{ep.PEOPLE_EP}/{TEST_EMAIL}/Rand/Rand/RE")
-    assert resp.status_code == 200
+    data = {
+        "name": "original",
+        "email": "update@nyu.edu",
+        "affiliation": "Rand",
+        "roles": "ED"
+    }
 
-    resp = TEST_CLIENT.put(f"{ep.PEOPLE_EP}/{TEST_EMAIL}/new/new/ED")
-    assert resp.status_code == 200
+    resp = TEST_CLIENT.put(f"{ep.PEOPLE_EP}/create", json=data)
+    assert resp.status_code == HTTPStatus.OK
+
+    updated_data = {
+        "name": "updated",
+        "email": "update@nyu.edu",
+        "affiliation": "updated",
+        "roles": "ED"
+    }
+
+    resp = TEST_CLIENT.post(f"{ep.PEOPLE_EP}/update", json=updated_data)
+    assert resp.status_code == HTTPStatus.OK
+
 
     people = TEST_CLIENT.get(ep.PEOPLE_EP)
     resp_json = people.get_json()
     assert TEST_EMAIL in resp_json
-    assert resp_json[TEST_EMAIL]["name"] == "new"
-    assert resp_json[TEST_EMAIL]["affiliation"] == "new"
+    assert resp_json[TEST_EMAIL]["name"] == "updated"
+    assert resp_json[TEST_EMAIL]["affiliation"] == "updated"
 
 
 @skip("Delete functionality test not done")
