@@ -1,4 +1,5 @@
 # states:
+AUTHOR_REV = 'AUR'
 COPY_EDIT = 'CED'
 IN_REF_REV = 'REV'
 REJECTED = 'REJ'
@@ -13,6 +14,7 @@ ED_MOVING = 'MOV'  # extra state to implement editor move
 TEST_STATE = SUBMITTED
 
 VALID_STATES = [
+    AUTHOR_REV,
     COPY_EDIT,
     IN_REF_REV,
     REJECTED,
@@ -137,3 +139,39 @@ def handle_action(curr_state, action, goal_state=ED_MOVING) -> str:
         elif action == WITHDRAW:
             new_state = WITHDRAWN
     return new_state
+
+
+def sub_assign_ref(manu: dict) -> str:
+    return IN_REF_REV
+
+
+FUNC = 'f'
+STATE_TABLE = {
+    SUBMITTED: {
+        ASSIGN_REF: {
+            # These next lines are alternatives that work the same.
+            # FUNC: sub_assign_ref,
+            FUNC: lambda m: IN_REF_REV,
+        },
+        REJECT: {
+            FUNC: lambda m: REJECTED,
+        },
+    },
+    IN_REF_REV: {
+    },
+    COPY_EDIT: {
+        DONE: {
+            FUNC: lambda m: AUTHOR_REV,
+        },
+    },
+    AUTHOR_REV: {
+    },
+    REJECTED: {
+    },
+}
+
+
+def get_valid_actions_by_state(state: str):
+    valid_actions = STATE_TABLE[state].keys()
+    print(f'{valid_actions=}')
+    return valid_actions

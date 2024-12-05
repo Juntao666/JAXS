@@ -5,6 +5,7 @@ import data.manuscripts.query as qry
 TITLE = 'title'
 DISP_NAME = 'disp_name'
 AUTHOR = 'author'
+REFEREES = 'referees'
 DISP_AUTHOR = 'disp_author'
 AUTHOR_EMAIL = 'author@domain.com'
 DISP_AUTHOR_EMAIL = 'disp_author_email'
