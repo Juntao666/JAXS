@@ -1,3 +1,5 @@
+import data.manuscripts.fields as flds
+
 # states:
 AUTHOR_REV = 'AUR'
 COPY_EDIT = 'CED'
@@ -27,6 +29,13 @@ VALID_STATES = [
     WITHDRAWN,
     ED_MOVING,  # extra state to implement editor move
 ]
+
+
+SAMPLE_MANU = {
+    flds.TITLE: 'Short module import names in Python',
+    flds.AUTHOR: 'Sunny Li',
+    flds.REFEREES: [],
+}
 
 
 def get_states() -> list:
@@ -83,64 +92,6 @@ def is_valid_action(action: str) -> bool:
     return action in VALID_ACTIONS
 
 
-def handle_action(curr_state, action, goal_state=ED_MOVING) -> str:
-    if not is_valid_state(curr_state):
-        raise ValueError(f'Invalid state: {curr_state}')
-    if not is_valid_state(goal_state):
-        raise ValueError(f'Invalid state: {goal_state}')
-    if not is_valid_action(action):
-        raise ValueError(f'Invalid action: {action}')
-
-    new_state = curr_state
-
-    if action == EDITOR_MOVE:
-        new_state = goal_state
-        return new_state
-
-    if curr_state == SUBMITTED:
-        if action == ASSIGN_REF:
-            new_state = IN_REF_REV
-        elif action == REJECT:
-            new_state = REJECTED
-        elif action == WITHDRAW:
-            new_state = WITHDRAWN
-    elif curr_state == IN_REF_REV:
-        if action == ACCEPT:
-            new_state = COPY_EDIT
-        elif action == REJECT:
-            new_state = REJECTED
-        elif action == ACCEPT_W_REV:
-            new_state = AU_REVISIONS
-        elif action == WITHDRAW:
-            new_state = WITHDRAWN
-    elif curr_state == AU_REVISIONS:
-        if action == DONE:
-            new_state = ED_REV
-        elif action == WITHDRAW:
-            new_state = WITHDRAWN
-    elif curr_state == ED_REV:
-        if action == ACCEPT:
-            new_state = COPY_EDIT
-        elif action == WITHDRAW:
-            new_state = WITHDRAWN
-    elif curr_state == COPY_EDIT:
-        if action == DONE:
-            new_state = AU_REVIEW
-        elif action == WITHDRAW:
-            new_state = WITHDRAWN
-    elif curr_state == AU_REVIEW:
-        if action == DONE:
-            new_state = FORMATTING
-        elif action == WITHDRAW:
-            new_state = WITHDRAWN
-    elif curr_state == FORMATTING:
-        if action == DONE:
-            new_state = PUBLISHED
-        elif action == WITHDRAW:
-            new_state = WITHDRAWN
-    return new_state
-
-
 def sub_assign_ref(manu: dict) -> str:
     return IN_REF_REV
 
@@ -175,3 +126,20 @@ def get_valid_actions_by_state(state: str):
     valid_actions = STATE_TABLE[state].keys()
     print(f'{valid_actions=}')
     return valid_actions
+
+
+def handle_action(curr_state, action, manuscript) -> str:
+    if curr_state not in STATE_TABLE:
+        raise ValueError(f'Bad state: {curr_state}')
+    if action not in STATE_TABLE[curr_state]:
+        raise ValueError(f'{action} not available in {curr_state}')
+    return STATE_TABLE[curr_state][action][FUNC](manuscript)
+
+
+def main():
+    print(handle_action(SUBMITTED, ASSIGN_REF, SAMPLE_MANU))
+    print(handle_action(SUBMITTED, REJECT, SAMPLE_MANU))
+
+
+if __name__ == '__main__':
+    main()

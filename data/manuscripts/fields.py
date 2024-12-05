@@ -1,5 +1,3 @@
-import data.manuscripts.query as qry
-
 # fields
 
 TITLE = 'title'
@@ -30,7 +28,6 @@ TEST_FLD_DISP_AU_EM = 'AuthorEmail@domain.com'
 TEST_FLD_ST = STATE
 TEST_FLD_DISP_ST = 'State'
 TEST_FLD_VAL_ST = VAL_STATE
-TEST_FLD_VAL_DISP_ST = qry.VALID_STATES
 TEST_FLD_TXT = TEXT
 TEST_FLD_DISP_TXT = 'Text'
 TEST_FLD_ABS = ABSTRACT
@@ -111,16 +108,8 @@ def get_history() -> list:
     return history_list
 
 
-def get_states() -> list:
-    return qry.VALID_STATES
-
-
 def get_referees() -> dict:
     return referee_dict
-
-
-def get_verdicts() -> list:
-    return qry.REF_VERDICT
 
 
 def is_valid_state(state: str) -> bool:
