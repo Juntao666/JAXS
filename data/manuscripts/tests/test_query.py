@@ -53,12 +53,51 @@ def test_handle_action_bad_action():
                            gen_random_not_valid_str(),
                            mqry.SAMPLE_MANU)
 
-@skip("Work in progress")
+
+def test_handle_editor_move_missing_target():
+    with pytest.raises(ValueError):
+        mqry.handle_action(mqry.TEST_STATE,
+                           mqry.EDITOR_MOVE,
+                           mqry.SAMPLE_MANU)
+
+
+def test_handle_editor_move_invalid_target():
+    invalid_target_state = gen_random_not_valid_str()
+
+    for state in mqry.get_states():
+        with pytest.raises(ValueError):
+            mqry.handle_action(
+                state,
+                mqry.ED_MOVING,
+                mqry.SAMPLE_MANU,
+                target_state=invalid_target_state
+            )
+
+
+def test_handle_editor_move_valid_target():
+    for state in mqry.get_states():
+        if state != mqry.WITHDRAWN:
+            new_state = mqry.handle_action(
+                mqry.TEST_STATE,
+                mqry.EDITOR_MOVE,
+                mqry.SAMPLE_MANU,
+                target_state=state)
+            assert mqry.is_valid_state(new_state)
+
+
 def test_handle_action_valid_return():
     for state in mqry.get_states():
         for action in mqry.get_valid_actions_by_state(state):
-            print(f'{action=}')
-            new_state = mqry.handle_action(state, action,
+            if action == mqry.EDITOR_MOVE:
+                print(f'{action=}')
+                new_state = mqry.handle_action(
+                    mqry.TEST_STATE,
+                    action,
+                    mqry.SAMPLE_MANU,
+                    target_state=state)
+            else:
+                print(f'{action=}')
+                new_state = mqry.handle_action(state, action,
                                            mqry.SAMPLE_MANU)
             print(f'{new_state=}')
             assert mqry.is_valid_state(new_state)
