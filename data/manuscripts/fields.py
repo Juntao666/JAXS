@@ -110,12 +110,32 @@ def get_history() -> list:
     return history_list
 
 
+def get_states() -> list:
+    return qry.VALID_STATES
+
+
 def get_referees() -> dict:
     return referee_dict
 
 
-def get_states() -> list:
-    return qry.VALID_STATES
+def get_verdicts() -> list:
+    return qry.REF_VERDICT
+
+
+def is_valid_state(state: str) -> bool:
+    valid_states = get_states()
+    if state in valid_states:
+        return True
+    else:
+        return False
+
+
+def is_valid_verdict(verdict: str) -> bool:
+    valid_verdicts = get_verdicts()
+    if verdict in valid_verdicts:
+        return True
+    else:
+        return False
 
 
 def main():

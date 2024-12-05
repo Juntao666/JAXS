@@ -39,7 +39,7 @@ def is_valid_state(state: str) -> bool:
 ACCEPT = 'ACC'
 ASSIGN_REF = 'ARF'
 REJECT = 'REJ'
-ASSIGN_W_REV = 'AWR'
+ACCEPT_W_REV = 'AWR'
 REMOVE_REF = 'RRF'
 EDITOR_MOVE = "EDM"
 
@@ -58,11 +58,18 @@ VALID_ACTIONS = [
     ASSIGN_REF,
     DONE,
     REJECT,
-    ASSIGN_W_REV,
+    ACCEPT_W_REV,
     WITHDRAW,
     REMOVE_REF,  # not sure how this works
     SUBMIT_REV,
     EDITOR_MOVE,
+]
+
+# for data fields
+REF_VERDICT = [
+    ACCEPT,
+    ACCEPT_W_REV,
+    REJECT
 ]
 
 
@@ -100,7 +107,7 @@ def handle_action(curr_state, action, goal_state=ED_MOVING) -> str:
             new_state = COPY_EDIT
         elif action == REJECT:
             new_state = REJECTED
-        elif action == ASSIGN_W_REV:
+        elif action == ACCEPT_W_REV:
             new_state = AU_REVISIONS
         elif action == WITHDRAW:
             new_state = WITHDRAWN
