@@ -132,6 +132,15 @@ def is_valid_verdict(verdict: str) -> bool:
         return False
 
 
+def get_disp_name(fld_nm: str) -> str:
+    fld = FIELDS.get(fld_nm)
+    if fld is None:
+        import logging
+        logging.warning(f"Field name {fld_nm} does not exist in FIELDS.")
+        return None
+    return fld.get(DISP_NAME, "Unknown")
+
+
 def main():
     print(f'{get_flds()=}')
 
