@@ -143,6 +143,11 @@ def get_disp_name(fld_nm: str) -> str:
 
 def main():
     print(f'{get_flds()=}')
+    missing_fields = validate_field_names()
+    if missing_fields:
+        print(f"Missing DISP_NAME fields: {missing_fields}")
+    else:
+        print("All fields are valid.")
 
 
 if __name__ == '__main__':
