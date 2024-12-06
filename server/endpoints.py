@@ -183,7 +183,7 @@ PEOPLE_UPDATE_FLDS = api.model('UpdatePeopleEntry', {
     ppl.NAME: fields.String,
     ppl.EMAIL: fields.String,
     ppl.AFFILIATION: fields.String,
-    ppl.ROLES: fields.String,
+    ppl.ROLES: fields.List(fields.String),
 })
 
 
@@ -201,8 +201,8 @@ class PeopleUpdate(Resource):
             name = request.json.get(ppl.NAME)
             affiliation = request.json.get(ppl.AFFILIATION)
             email = request.json.get(ppl.EMAIL)
-            role = request.json.get(ppl.ROLES)
-            ret = ppl.update_person(name, affiliation, email, role)
+            roles = request.json.get(ppl.ROLES)
+            ret = ppl.update_person(name, affiliation, email, roles)
         except Exception as err:
             raise wz.NotAcceptable(f'Could not update person: '
                                    f'{err=}')

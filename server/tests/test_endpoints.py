@@ -83,11 +83,11 @@ def test_get_people():
 
 
 @pytest.fixture(scope="function")
-@skip("Work in progress")
 def add_person():
+    NEW_EMAIL = "testtemp@nyu.edu"
     data = {
         "name": "Test",
-        "email": "test@nyu.edu",
+        "email": NEW_EMAIL,
         "affiliation": "Rand",
         "roles": "ED"
     }
@@ -97,7 +97,7 @@ def add_person():
     yield NEW_EMAIL
     
     delete_resp = TEST_CLIENT.delete(f"{ep.PEOPLE_EP}/{NEW_EMAIL}")
-    assert delete_resp.status_code == 200
+    assert delete_resp.status_code == HTTPStatus.OK
 
     
 def test_add_person(add_person):
@@ -108,11 +108,11 @@ def test_add_person(add_person):
     assert NEW_EMAIL in resp_json
 
 
-@skip("Work in progress")
 def test_update_person():
+    UPDATE_EMAIL = "updatetemp@nyu.edu"
     data = {
         "name": "original",
-        "email": "update@nyu.edu",
+        "email": UPDATE_EMAIL,
         "affiliation": "Rand",
         "roles": "ED"
     }
@@ -122,9 +122,9 @@ def test_update_person():
 
     updated_data = {
         "name": "updated",
-        "email": "update@nyu.edu",
+        "email": UPDATE_EMAIL,
         "affiliation": "updated",
-        "roles": "ED"
+        "roles": ["ED"]
     }
 
     resp = TEST_CLIENT.post(f"{ep.PEOPLE_EP}/update", json=updated_data)
@@ -133,18 +133,31 @@ def test_update_person():
 
     people = TEST_CLIENT.get(ep.PEOPLE_EP)
     resp_json = people.get_json()
-    assert TEST_EMAIL in resp_json
-    assert resp_json[TEST_EMAIL]["name"] == "updated"
-    assert resp_json[TEST_EMAIL]["affiliation"] == "updated"
+    assert UPDATE_EMAIL in resp_json
+    assert resp_json[UPDATE_EMAIL]["name"] == "updated"
+    assert resp_json[UPDATE_EMAIL]["affiliation"] == "updated"
+
+    delete_resp = TEST_CLIENT.delete(f"{ep.PEOPLE_EP}/{UPDATE_EMAIL}")
+    assert delete_resp.status_code == HTTPStatus.OK
 
 
-@skip("Delete functionality test not done")
 def test_delete_person():
-    email = ""
-    resp = TEST_CLIENT.delete(f'{ep.PEOPLE_EP}/{email}')
-    assert resp.status_code == 200
+
+    DELETE_EMAIL = "delete@nyu.edu"
+    data = {
+        "name": "delete",
+        "email": DELETE_EMAIL,
+        "affiliation": "Rand",
+        "roles": "ED"
+    }
+
+    resp = TEST_CLIENT.put(f"{ep.PEOPLE_EP}/create", json=data)
+    assert resp.status_code == HTTPStatus.OK
+
+    resp = TEST_CLIENT.delete(f'{ep.PEOPLE_EP}/{DELETE_EMAIL}')
+    assert resp.status_code == HTTPStatus.OK
 
     # Check if the person is actually deleted
     resp = TEST_CLIENT.get(ep.PEOPLE_EP)
     resp_json = resp.get_json()
-    assert email not in resp_json
+    assert DELETE_EMAIL not in resp_json
