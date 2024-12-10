@@ -6,6 +6,7 @@ COPY_EDIT = 'CED'
 IN_REF_REV = 'REV'
 REJECTED = 'REJ'
 SUBMITTED = 'SUB'
+WITHDRAWN = 'WIT'
 AUTHOR_REVISIONS = 'ARN'
 ED_REV = 'ERV'
 FORMATTING = 'FOR'
@@ -46,6 +47,7 @@ def is_valid_state(state: str) -> bool:
 # ed actions:
 ACCEPT = 'ACC'
 ASSIGN_REF = 'ARF'
+DELETE_REF = 'DRF'
 REJECT = 'REJ'
 ACCEPT_W_REV = 'AWR'
 REMOVE_REF = 'RRF'
@@ -64,6 +66,7 @@ TEST_ACTION = ACCEPT
 VALID_ACTIONS = [
     ACCEPT,
     ASSIGN_REF,
+    DELETE_REF,
     DONE,
     REJECT,
     ACCEPT_W_REV,
@@ -89,7 +92,9 @@ def is_valid_action(action: str) -> bool:
     return action in VALID_ACTIONS
 
 
-def sub_assign_ref(manu: dict) -> str:
+def assign_ref(manu: dict, ref: str, extra=None) -> str:
+    print(extra)
+    manu[flds.REFEREES].append(ref)
     return IN_REF_REV
 
 
@@ -97,6 +102,15 @@ def handle_editor_move(manu: dict, target_state: str) -> str:
     if target_state not in VALID_STATES:
         raise ValueError(f"Invalid target state: {target_state}")
     return target_state
+
+
+def delete_ref(manu: dict, ref: str) -> str:
+    if len(manu[flds.REFEREES]) > 0:
+        manu[flds.REFEREES].remove(ref)
+    if len(manu[flds.REFEREES]) > 0:
+        return IN_REF_REV
+    else:
+        return SUBMITTED
 
 
 FUNC = 'f'
