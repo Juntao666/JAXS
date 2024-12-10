@@ -114,6 +114,13 @@ def delete_ref(manu: dict, ref: str) -> str:
 
 
 FUNC = 'f'
+
+COMMON_ACTIONS = {
+    WITHDRAW: {
+        FUNC: lambda **kwargs: WITHDRAWN,
+    },
+}
+
 STATE_TABLE = {
     SUBMITTED: {
         ASSIGN_REF: {
