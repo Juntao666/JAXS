@@ -11,7 +11,6 @@ AUTHOR_REVISIONS = 'ARN'
 ED_REV = 'ERV'
 FORMATTING = 'FOR'
 PUBLISHED = 'PUB'
-WITHDRAWN = 'WDN'
 ED_MOVING = 'MOV'  # extra state to implement editor move
 TEST_STATE = SUBMITTED
 
@@ -21,10 +20,10 @@ VALID_STATES = [
     IN_REF_REV,
     REJECTED,
     SUBMITTED,
-    AUTHOR_REVISIONS,
-    ED_REV,
-    FORMATTING,
-    PUBLISHED,
+    # AUTHOR_REVISIONS,
+    # ED_REV,
+    # FORMATTING,
+    # PUBLISHED,
     WITHDRAWN,
 ]
 
@@ -55,7 +54,7 @@ EDITOR_MOVE = "EDM"
 
 # au action
 DONE = 'DON'
-WITHDRAW = 'WDW'
+WITHDRAW = 'WIT'
 
 # ref action
 SUBMIT_REV = 'SRV'
@@ -69,11 +68,7 @@ VALID_ACTIONS = [
     DELETE_REF,
     DONE,
     REJECT,
-    ACCEPT_W_REV,
     WITHDRAW,
-    REMOVE_REF,  # not sure how this works
-    SUBMIT_REV,
-    EDITOR_MOVE,
 ]
 
 # for data fields
@@ -124,103 +119,36 @@ COMMON_ACTIONS = {
 STATE_TABLE = {
     SUBMITTED: {
         ASSIGN_REF: {
-            # These next lines are alternatives that work the same.
-            # FUNC: sub_assign_ref,
-            FUNC: lambda m: IN_REF_REV,
+            FUNC: assign_ref,
         },
         REJECT: {
-            FUNC: lambda m: REJECTED,
+            FUNC: lambda **kwargs: REJECTED,
         },
-        WITHDRAW: {
-            FUNC: lambda m: WITHDRAWN,
-        },
-        EDITOR_MOVE: {
-            FUNC: lambda m, t: handle_editor_move(m, t),
-        },
+        **COMMON_ACTIONS,
     },
     IN_REF_REV: {
-        ACCEPT: {
-            FUNC: lambda m: COPY_EDIT
+        ASSIGN_REF: {
+            FUNC: assign_ref,
         },
-        ACCEPT_W_REV: {
-            FUNC: lambda m: AUTHOR_REVISIONS
+        DELETE_REF: {
+            FUNC: delete_ref,
         },
-        REJECT: {
-            FUNC: lambda m: REJECTED,
-        },
-        WITHDRAW: {
-            FUNC: lambda m: WITHDRAWN,
-        },
-        EDITOR_MOVE: {
-            FUNC: lambda m, t: handle_editor_move(m, t),
-        },
-    },
-    AUTHOR_REVISIONS: {
-        ACCEPT: {
-            FUNC: lambda m: ED_REV,
-        },
-        WITHDRAW: {
-            FUNC: lambda m: WITHDRAWN,
-        },
-        EDITOR_MOVE: {
-            FUNC: lambda m, t: handle_editor_move(m, t),
-        },
-    },
-    ED_REV: {
-        ACCEPT: {
-            FUNC: lambda m: COPY_EDIT,
-        },
-        WITHDRAW: {
-            FUNC: lambda m: WITHDRAWN,
-        },
-        EDITOR_MOVE: {
-            FUNC: lambda m, t: handle_editor_move(m, t),
-        },
+        **COMMON_ACTIONS,
     },
     COPY_EDIT: {
         DONE: {
-            FUNC: lambda m: AUTHOR_REV,
+            FUNC: lambda **kwargs: AUTHOR_REV,
         },
-        WITHDRAW: {
-            FUNC: lambda m: WITHDRAWN,
-        },
-        EDITOR_MOVE: {
-            FUNC: lambda m, t: handle_editor_move(m, t),
-        },
+        **COMMON_ACTIONS,
     },
     AUTHOR_REV: {
-        DONE: {
-            FUNC: lambda m: FORMATTING,
-        },
-        WITHDRAW: {
-            FUNC: lambda m: WITHDRAWN,
-        },
-        EDITOR_MOVE: {
-            FUNC: lambda m, t: handle_editor_move(m, t),
-        },
-    },
-    FORMATTING: {
-        DONE: {
-            FUNC: lambda m: PUBLISHED,
-        },
-        WITHDRAW: {
-            FUNC: lambda m: WITHDRAWN,
-        },
-        EDITOR_MOVE: {
-            FUNC: lambda m, t: handle_editor_move(m, t),
-        },
-    },
-    PUBLISHED: {
-        EDITOR_MOVE: {
-            FUNC: lambda m, t: handle_editor_move(m, t),
-        },
+        **COMMON_ACTIONS,
     },
     REJECTED: {
-        EDITOR_MOVE: {
-            FUNC: lambda m, t: handle_editor_move(m, t),
-        },
+        **COMMON_ACTIONS,
     },
     WITHDRAWN: {
+        **COMMON_ACTIONS,
     },
 }
 
@@ -231,17 +159,13 @@ def get_valid_actions_by_state(state: str):
     return valid_actions
 
 
-def handle_action(curr_state, action, manuscript, target_state=None) -> str:
+def handle_action(curr_state, action, **kwargs) -> str:
     if curr_state not in STATE_TABLE:
         raise ValueError(f'Bad state: {curr_state}')
     if action not in STATE_TABLE[curr_state]:
         raise ValueError(f'{action} not available in {curr_state}')
-    if action == EDITOR_MOVE:
-        if target_state is None:
-            raise ValueError("EDITOR_MOVE requires a target state.")
-        return STATE_TABLE[curr_state][action][FUNC](manuscript, target_state)
-    return STATE_TABLE[curr_state][action][FUNC](manuscript)
-
+    return STATE_TABLE[curr_state][action][FUNC](**kwargs)
+    
 
 def main():
     print(handle_action(SUBMITTED, ASSIGN_REF, SAMPLE_MANU))
