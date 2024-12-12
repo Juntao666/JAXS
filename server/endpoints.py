@@ -11,6 +11,7 @@ from flask_cors import CORS
 import werkzeug.exceptions as wz
 
 import data.people as ppl
+import data.text as txt
 
 app = Flask(__name__)
 CORS(app)
@@ -36,6 +37,7 @@ MASTHEAD = 'Masthead'
 TITLE = 'The Journal of API Technology'
 TITLE_EP = '/title'
 TITLE_RESP = 'Title'
+TEXT_EP = '/texts'
 
 
 @api.route(HELLO_EP)
@@ -210,6 +212,100 @@ class PeopleUpdate(Resource):
             MESSAGE: 'Person updated!',
             RETURN: ret,
         }
+
+
+TEXT_CREATE_FLDS = api.model('AddNewTextEntry', {
+    txt.KEY: fields.String,
+    txt.TITLE: fields.String,
+    txt.TEXT: fields.String,
+})
+
+TEXT_UPDATE_FLDS = api.model('UpdateTextEntry', {
+    txt.TITLE: fields.String,
+    txt.TEXT: fields.String,
+})
+
+
+@api.route(TEXT_EP)
+class Texts(Resource):
+    """
+    This class handles retrieving all text entries
+    or creating new text entries.
+    """
+    def get(self):
+        """
+        Retrieve all text entries.
+        """
+        return txt.read(), HTTPStatus.OK
+
+    @api.response(HTTPStatus.OK, 'Success')
+    @api.response(HTTPStatus.NOT_ACCEPTABLE, 'Not acceptable')
+    @api.expect(TEXT_CREATE_FLDS)
+    def post(self):
+        """
+        Add a new text entry.
+        """
+        try:
+            key = request.json.get(txt.KEY)
+            title = request.json.get(txt.TITLE)
+            text = request.json.get(txt.TEXT)
+            ret = txt.create(key, title, text)
+        except ValueError as err:
+            raise wz.NotAcceptable(f'Could not add text: {err}')
+        return {
+            MESSAGE: 'Text added!',
+            RETURN: ret,
+        }, HTTPStatus.OK
+
+
+@api.route(f'{TEXT_EP}/<key>')
+class Text(Resource):
+    """
+    This class handles retrieving, updating,
+    or deleting a specific text entry by its key.
+    """
+    @api.response(HTTPStatus.OK, 'Success')
+    @api.response(HTTPStatus.NOT_FOUND, 'Text not found')
+    def get(self, key):
+        """
+        Retrieve a specific text entry by key.
+        """
+        text = txt.read_one(key)
+        if text:
+            return text, HTTPStatus.OK
+        else:
+            raise wz.NotFound(f'Text with key \'{key}\' not found.')
+
+    @api.response(HTTPStatus.OK, 'Success')
+    @api.response(HTTPStatus.NOT_FOUND, 'Text not found')
+    def delete(self, key):
+        """
+        Delete a specific text entry by key.
+        """
+        ret = txt.delete(key)
+        if "does not exist" in ret:
+            raise wz.NotFound(ret)
+        return {
+            MESSAGE: ret,
+        }, HTTPStatus.OK
+
+    @api.response(HTTPStatus.OK, 'Success')
+    @api.response(HTTPStatus.NOT_ACCEPTABLE, 'Not acceptable')
+    @api.expect(TEXT_UPDATE_FLDS)
+    def put(self, key):
+        """
+        Update a specific text entry by key.
+        """
+        try:
+            title = request.json.get(txt.TITLE)
+            text = request.json.get(txt.TEXT)
+            ret = txt.update(key, title, text)
+        except ValueError as err:
+            raise wz.NotAcceptable(f'Could not update text: {err}')
+        return {
+            MESSAGE: 'Text updated!',
+            RETURN: ret,
+        }, HTTPStatus.OK
 
 
 @api.route(f'{PEOPLE_EP}/masthead')
