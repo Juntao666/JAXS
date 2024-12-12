@@ -161,3 +161,99 @@ def test_delete_person():
     resp = TEST_CLIENT.get(ep.PEOPLE_EP)
     resp_json = resp.get_json()
     assert DELETE_EMAIL not in resp_json
+
+
+@patch('data.text.read', autospec=True, return_value={
+    'mock_key_1': {'title': 'Test 1', 'text': 'Sample text 1'},
+    'mock_key_2': {'title': 'Test 2', 'text': 'Sample text 2'}
+})
+def test_read_text(mock_read):
+    resp = TEST_CLIENT.get(ep.TEXT_EP)
+    assert resp.status_code == OK
+    resp_json = resp.get_json()
+    for _key, entry in resp_json.items():
+        assert isinstance(_key, str)
+        assert len(_key) > 0
+        assert 'title' in entry
+        assert 'text' in entry
+
+
+@patch('data.text.read_one', autospec=True, return_value={'title': 'Sample Title', 'text': 'Sample Text'})
+def test_read_one_text(mock_read_one):
+    resp = TEST_CLIENT.get(f'{ep.TEXT_EP}/mock_key')
+    assert resp.status_code == OK
+
+
+@patch('data.text.read_one', autospec=True, return_value=None)
+def test_read_one_text_not_found(mock_read_one):
+    resp = TEST_CLIENT.get(f'{ep.TEXT_EP}/mock_key')
+    assert resp.status_code == NOT_FOUND
+
+
+@pytest.fixture(scope="function")
+def add_text():
+    NEW_KEY = "test_key"
+    data = {
+        "key": NEW_KEY,
+        "title": "Test Title",
+        "text": "This is a test text"
+    }
+    resp = TEST_CLIENT.post(ep.TEXT_EP, json=data)
+    assert resp.status_code == HTTPStatus.OK
+
+    yield NEW_KEY
+
+    delete_resp = TEST_CLIENT.delete(f"{ep.TEXT_EP}/{NEW_KEY}")
+    assert delete_resp.status_code == HTTPStatus.OK
+
+
+def test_add_text(add_text):
+    NEW_KEY = add_text
+    resp = TEST_CLIENT.get(ep.TEXT_EP)
+    resp_json = resp.get_json()
+    assert NEW_KEY in resp_json
+
+
+def test_update_text():
+    UPDATE_KEY = "update_key"
+    data = {
+        "key": UPDATE_KEY,
+        "title": "Original Title",
+        "text": "Original text"
+    }
+    resp = TEST_CLIENT.post(ep.TEXT_EP, json=data)
+    assert resp.status_code == HTTPStatus.OK
+
+    updated_data = {
+        "title": "Updated Title",
+        "text": "Updated text"
+    }
+    resp = TEST_CLIENT.put(f"{ep.TEXT_EP}/{UPDATE_KEY}", json=updated_data)
+    assert resp.status_code == HTTPStatus.OK
+
+    resp = TEST_CLIENT.get(f"{ep.TEXT_EP}/{UPDATE_KEY}")
+    resp_json = resp.get_json()
+    assert resp_json['title'] == "Updated Title"
+    assert resp_json['text'] == "Updated text"
+
+    delete_resp = TEST_CLIENT.delete(f"{ep.TEXT_EP}/{UPDATE_KEY}")
+    assert delete_resp.status_code == HTTPStatus.OK
+
+
+def test_delete_text():
+    DELETE_KEY = "delete_key"
+    data = {
+        "key": DELETE_KEY,
+        "title": "To Delete",
+        "text": "This text will be deleted"
+    }
+
+    resp = TEST_CLIENT.post(ep.TEXT_EP, json=data)
+    assert resp.status_code == HTTPStatus.OK
+
+    resp = TEST_CLIENT.delete(f'{ep.TEXT_EP}/{DELETE_KEY}')
+    assert resp.status_code == HTTPStatus.OK
+
+    resp = TEST_CLIENT.get(ep.TEXT_EP)
+    resp_json = resp.get_json()
+    assert DELETE_KEY not in resp_json
