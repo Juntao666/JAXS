@@ -2,30 +2,13 @@
 This module interfaces to our user data.
 """
 
+import data.db_connect as dbc
+
+TEXTS_COLLECT = 'texts'
 # fields
 KEY = 'key'
 TITLE = 'title'
 TEXT = 'text'
-EMAIL = 'email'
-
-TEST_KEY = 'HomePage'
-SUBM_KEY = 'SubmissionsPage'
-DEL_KEY = 'DeletePage'
-
-text_dict = {
-    TEST_KEY: {
-        TITLE: 'Home Page',
-        TEXT: 'This is a journal about building API servers.',
-    },
-    SUBM_KEY: {
-        TITLE: 'Submissions Page',
-        TEXT: 'All submissions must be original work in Word format.',
-    },
-    DEL_KEY: {
-        TITLE: 'Delete Page',
-        TEXT: 'This is a text to delete.',
-    },
-}
 
 
 def create(key: str, title: str, text: str) -> str:
@@ -37,9 +20,9 @@ def create(key: str, title: str, text: str) -> str:
         - text: The body text for the page
     Returns a success message or already exists message
     """
-    if key in text_dict:
+    if exists(key):
         raise ValueError(f"Adding duplicate text {key}")
-    text_dict[key] = {TITLE: title, TEXT: text}
+    dbc.create(TEXTS_COLLECT, {KEY: key, TITLE: title, TEXT: text})
     return key
 
 
@@ -50,9 +33,9 @@ def delete(key: str) -> str:
         - key: The key of the page to delete
     Returns a success message or a does not exist message
     """
-    if key not in text_dict:
+    if not exists(key):
         return f"'{key}' does not exist."
-    del text_dict[key]
+    dbc.delete(TEXTS_COLLECT, {KEY: key})
     return f"'{key}' deleted successfully."
 
 
@@ -65,9 +48,9 @@ def update(key: str, title: str, text: str) -> str:
         - text: The new body text for the page
     Returns a success message or does not exists message
     """
-    if key not in text_dict:
+    if not exists(key):
         return f"'{key}' does not exists."
-    text_dict[key] = {TITLE: title, TEXT: text}
+    dbc.update(TEXTS_COLLECT, {KEY: key}, {KEY: key, TITLE: title, TEXT: text})
     return f"'{title}' updated successfully."
 
 
@@ -78,7 +61,7 @@ def read() -> dict:
         - Returns a dictionary of users keyed on user email.
         - Each user email must be the key for another dictionary.
     """
-    text = text_dict
+    text = dbc.read_dict(TEXTS_COLLECT, KEY)
     return text
 
 
@@ -89,10 +72,12 @@ def read_one(key: str) -> dict:
         - key: The key for the page
     Returns the page dictionary or None if key not found.
     """
-    result = {}
-    if key in text_dict:
-        result = text_dict[key]
+    result = dbc.read_one(TEXTS_COLLECT, {KEY: key})
     return result
+
+
+def exists(key: str) -> bool:
+    return read_one(key) is not None
 
 
 def main():

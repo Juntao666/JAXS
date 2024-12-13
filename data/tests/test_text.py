@@ -1,14 +1,22 @@
 import pytest
 from unittest.mock import patch
+from unittest import skip
 
 import data.text as txt
 
 
 @pytest.fixture(scope='function')
 def temp_text():
-    _key = txt.create('TempText', 'Temp Text Title', "Temp Text Texts")
-    yield _key
-    txt.delete(_key)
+    key = txt.create('Temptext', 'Temp Text Title', "Temp Text Texts")
+    yield key
+    try:
+        txt.delete(key)
+    except Error:
+        print('text already deleted.')
+
+
+def test_exists(temp_text):
+    assert txt.exists(temp_text)
 
 
 @patch('data.text.read', autospec=True,
@@ -30,21 +38,15 @@ def test_read_one_not_found(mock_read):
     assert txt.read_one('Not a page key!') == {}
 
 
-TITLE = 'title'
-TEXT = 'text'
-TEST_KEY_DATA = {
-    TITLE: 'Home Page',
-    TEXT: 'This is a journal about building API servers.',
-}
 NEW_TEXT = "NEW TEXT"
 NEW_TITLE = "NEW TITLE"
 
 
-def test_update():
-    assert txt.read_one(txt.TEST_KEY) == TEST_KEY_DATA
-    response = txt.update(txt.TEST_KEY, NEW_TITLE, NEW_TEXT)
-    assert response
-    assert txt.read_one(txt.TEST_KEY) != TEST_KEY_DATA
+def test_update(temp_text):
+    txt.update(temp_text, NEW_TITLE, NEW_TEXT)
+    updated_rec = txt.read_one(temp_text)
+    assert updated_rec[txt.TITLE] == NEW_TITLE
+    assert updated_rec[txt.TEXT] == NEW_TEXT
 
 
 NONE_EXISTENT_KEY = "NOT EXIST"
@@ -53,24 +55,20 @@ NONE_EXISTENT_KEY = "NOT EXIST"
 def test_update_none_existent():
     response = txt.update(NONE_EXISTENT_KEY, "N/A", "N/A")
     assert response
-    assert txt.read_one(NONE_EXISTENT_KEY) == {}
+    assert not txt.exists(NONE_EXISTENT_KEY)
 
 
-def test_delete_text():
-    text = txt.read()
-    old_len = len(text)
-    txt.delete(txt.DEL_KEY)
-    text = txt.read()
-    assert len(text) < old_len
-    assert txt.DEL_KEY not in text
+def test_delete_text(temp_text):
+    txt.delete(temp_text)
+    assert not txt.exists(temp_text)
 
 
-NEW_KEY = "NEW TEXT"
+NEW_KEY = "NEWTEXT"
 
 
 def test_create():
-    text = txt.read()
-    assert NEW_KEY not in text
     txt.create(NEW_KEY, "Title", "content")
-    text = txt.read()
-    assert NEW_KEY in text
+    assert txt.exists(NEW_KEY)
+    txt.delete(NEW_KEY)
+
+
