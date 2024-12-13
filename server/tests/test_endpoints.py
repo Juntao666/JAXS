@@ -191,9 +191,8 @@ def test_read_one_text_not_found(mock_read_one):
 
 
 @pytest.fixture(scope="function")
-@skip("work in progress")
 def add_text():
-    NEW_KEY = "test_key"
+    NEW_KEY = "testKey"
     data = {
         "key": NEW_KEY,
         "title": "Test Title",
@@ -215,9 +214,8 @@ def test_add_text(add_text):
     assert NEW_KEY in resp_json
 
 
-@skip("work in progress")
 def test_update_text():
-    UPDATE_KEY = "update_key"
+    UPDATE_KEY = "updateKey"
     data = {
         "key": UPDATE_KEY,
         "title": "Original Title",
@@ -242,9 +240,8 @@ def test_update_text():
     assert delete_resp.status_code == HTTPStatus.OK
 
 
-@skip("work in progress")
 def test_delete_text():
-    DELETE_KEY = "delete_key"
+    DELETE_KEY = "deleteKey"
     data = {
         "key": DELETE_KEY,
         "title": "To Delete",

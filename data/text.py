@@ -49,7 +49,7 @@ def update(key: str, title: str, text: str) -> str:
     Returns a success message or does not exists message
     """
     if not exists(key):
-        return f"'{key}' does not exists."
+        raise ValueError(f"Text {key} does not exist")
     dbc.update(TEXTS_COLLECT, {KEY: key}, {KEY: key, TITLE: title, TEXT: text})
     return f"'{title}' updated successfully."
 
