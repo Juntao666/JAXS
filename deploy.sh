@@ -1,24 +1,57 @@
+# #!/bin/bash
+# # This shell script deploys a new version to a server.
+
+# PROJ_DIR=demo-repo4
+# VENV=Fall2023
+# PA_DOMAIN="Fall2023.pythonanywhere.com"
+# PA_USER='AnnaTX'
+# echo "Project dir = $PROJ_DIR"
+# echo "PA domain = $PA_DOMAIN"
+# echo "Virtual env = $VENV"
+
+# if [ -z "$DEMO_PA_PWD" ]
+# then
+#     echo "The PythonAnywhere password var (DEMO_PA_PWD) must be set in the env."
+#     exit 1
+# fi
+
+# echo "PA user = $PA_USER"
+# echo "PA password = $DEMO_PA_PWD"
+
+# echo "SSHing to PythonAnywhere."
+# sshpass -p $DEMO_PA_PWD ssh -o "StrictHostKeyChecking no" $PA_USER@ssh.pythonanywhere.com << EOF
+#     cd ~/$PROJ_DIR; PA_USER=$PA_USER PROJ_DIR=~/$PROJ_DIR VENV=$VENV PA_DOMAIN=$PA_DOMAIN ./rebuild.sh
+# EOF
+
+
 #!/bin/bash
-# This shell script deploys a new version to a server.
+# This shell script deploys a new version to a PythonAnywhere server.
 
-PROJ_DIR=demo-repo4
-VENV=Fall2023
-PA_DOMAIN="Fall2023.pythonanywhere.com"
-PA_USER='Fall2023'
-echo "Project dir = $PROJ_DIR"
-echo "PA domain = $PA_DOMAIN"
-echo "Virtual env = $VENV"
+# Project and environment configuration
+PROJ_DIR="JAXS"
+VENV="venv"
+PA_DOMAIN="jaxs-proj-annatx.pythonanywhere.com"
 
-if [ -z "$DEMO_PA_PWD" ]
-then
-    echo "The PythonAnywhere password var (DEMO_PA_PWD) must be set in the env."
+# Environment variables for username and password
+if [ -z "$PA_USER" ]; then
+    echo "Error: The PythonAnywhere username (PA_USER) must be set in the environment."
     exit 1
 fi
 
-echo "PA user = $PA_USER"
-echo "PA password = $DEMO_PA_PWD"
+if [ -z "$DEMO_PA_PWD" ]; then
+    echo "Error: The PythonAnywhere password (DEMO_PA_PWD) must be set in the environment."
+    exit 1
+fi
 
-echo "SSHing to PythonAnywhere."
-sshpass -p $DEMO_PA_PWD ssh -o "StrictHostKeyChecking no" $PA_USER@ssh.pythonanywhere.com << EOF
-    cd ~/$PROJ_DIR; PA_USER=$PA_USER PROJ_DIR=~/$PROJ_DIR VENV=$VENV PA_DOMAIN=$PA_DOMAIN ./rebuild.sh
+echo "Project dir    = $PROJ_DIR"
+echo "PA domain      = $PA_DOMAIN"
+echo "Virtual env    = $VENV"
+echo "PA user        = $PA_USER"
+
+echo "SSHing to PythonAnywhere..."
+sshpass -p "$DEMO_PA_PWD" ssh -o "StrictHostKeyChecking no" "$PA_USER@ssh.pythonanywhere.com" << EOF
+    cd ~/$PROJ_DIR
+    PA_USER=$PA_USER PROJ_DIR=~/$PROJ_DIR VENV=$VENV PA_DOMAIN=$PA_DOMAIN ./rebuild.sh
 EOF
+
+echo "Deployment completed successfully."
