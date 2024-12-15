@@ -31,7 +31,11 @@ def connect_db():
             print("Connecting to Mongo in the cloud.")
             client = pm.MongoClient(f'mongodb+srv://annateng8000:{password}'
                                     + '@jaxscluster1.qbdn4.mongodb.net/'
-                                    + '?retryWrites=true&w=majority')
+                                    + '?retryWrites=true&w=majority',
+                                    connectTimeoutMS=30000,
+                                    socketTimeoutMS=None,
+                                    connect=False,
+                                    maxPoolsize=1)
             # mongodb+srv://annateng8000:<db_password>@jaxscluster1.qbdn4.
             # mongodb.net/?retryWrites=true&w=majority&appName=JAXSCluster1
         else:
