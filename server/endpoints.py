@@ -12,6 +12,7 @@ import werkzeug.exceptions as wz
 
 import data.people as ppl
 import data.text as txt
+import data.manuscripts.manuscripts as mnscrpt
 
 app = Flask(__name__)
 CORS(app)
@@ -38,6 +39,7 @@ TITLE = 'The Journal of API Technology'
 TITLE_EP = '/title'
 TITLE_RESP = 'Title'
 TEXT_EP = '/texts'
+MANUSCRIPT_EP = '/manuscripts'
 
 
 @api.route(HELLO_EP)
@@ -305,6 +307,130 @@ class Text(Resource):
         return {
             MESSAGE: 'Text updated!',
             RETURN: ret,
+        }, HTTPStatus.OK
+
+
+MANUSCRIPTS_CREATE_FLDS = api.model('AddNewManuscriptEntry', {
+    'key': fields.String,
+    'title': fields.String,
+    'author': fields.String,
+    'author_email': fields.String,
+    'state': fields.String,
+    'text': fields.String,
+    'abstract': fields.String,
+    'editor': fields.String,
+    'referee': fields.Raw,
+    'history': fields.List(fields.String),
+})
+
+MANUSCRIPTS_UPDATE_FLDS = api.model('UpdateManuscriptEntry', {
+    'title': fields.String,
+    'author': fields.String,
+    'author_email': fields.String,
+    'state': fields.String,
+    'text': fields.String,
+    'abstract': fields.String,
+    'editor': fields.String,
+    'referee': fields.Raw,
+    'history': fields.List(fields.String),
+})
+
+
+@api.route(MANUSCRIPT_EP)
+class Manuscripts(Resource):
+    """
+    This class handles retrieving all manuscript entries
+    or creating new manuscript entries.
+    """
+    def get(self):
+        """
+        Retrieve all manuscript entries.
+        """
+        return mnscrpt.read(), HTTPStatus.OK
+
+    @api.response(HTTPStatus.OK, 'Success')
+    @api.response(HTTPStatus.NOT_ACCEPTABLE, 'Not acceptable')
+    @api.expect(MANUSCRIPTS_CREATE_FLDS)
+    def post(self):
+        """
+        Add a new manuscript entry.
+        """
+        try:
+            key = request.json.get('key')
+            title = request.json.get('title')
+            author = request.json.get('author')
+            author_email = request.json.get('author_email')
+            state = request.json.get('state')
+            text = request.json.get('text')
+            abstract = request.json.get('abstract')
+            editor = request.json.get('editor')
+            referee = request.json.get('referee')
+            history = request.json.get('history')
+            ret = mnscrpt.create(key, title, author, author_email, state,
+                                 text, abstract, editor, referee, history)
+        except ValueError as err:
+            raise wz.NotAcceptable(f'Could not add manuscript: {err}')
+        return {
+            'message': 'Manuscript added!',
+            'return': ret,
+        }, HTTPStatus.OK
+
+
+@api.route(f'{MANUSCRIPT_EP}/<key>')
+class Manuscript(Resource):
+    """
+    This class handles retrieving, updating,
+    or deleting a specific manuscript entry by its key.
+    """
+    @api.response(HTTPStatus.OK, 'Success')
+    @api.response(HTTPStatus.NOT_FOUND, 'Manuscript not found')
+    def get(self, key):
+        """
+        Retrieve a specific manuscript entry by key.
+        """
+        manuscript = mnscrpt.read_one(key)
+        if manuscript:
+            return manuscript, HTTPStatus.OK
+        else:
+            raise wz.NotFound(f'Manuscript with key \'{key}\' not found.')
+
+    @api.response(HTTPStatus.OK, 'Success')
+    @api.response(HTTPStatus.NOT_FOUND, 'Manuscript not found')
+    def delete(self, key):
+        """
+        Delete a specific manuscript entry by key.
+        """
+        ret = mnscrpt.delete(key)
+        if "does not exist" in ret:
+            raise wz.NotFound(ret)
+        return {
+            'message': ret,
+        }, HTTPStatus.OK
+
+    @api.response(HTTPStatus.OK, 'Success')
+    @api.response(HTTPStatus.NOT_ACCEPTABLE, 'Not acceptable')
+    @api.expect(MANUSCRIPTS_UPDATE_FLDS)
+    def put(self, key):
+        """
+        Update a specific manuscript entry by key.
+        """
+        try:
+            title = request.json.get('title')
+            author = request.json.get('author')
+            author_email = request.json.get('author_email')
+            state = request.json.get('state')
+            text = request.json.get('text')
+            abstract = request.json.get('abstract')
+            editor = request.json.get('editor')
+            referee = request.json.get('referee')
+            history = request.json.get('history')
+            ret = mnscrpt.update(key, title, author, author_email, state,
+                                 text, abstract, editor, referee, history)
+        except ValueError as err:
+            raise wz.NotAcceptable(f'Could not update manuscript: {err}')
+        return {
+            'message': 'Manuscript updated!',
+            'return': ret,
         }, HTTPStatus.OK
 
 
