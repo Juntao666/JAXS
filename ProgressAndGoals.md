@@ -1,6 +1,8 @@
 # Requirements Met
 
-API hosted in Pythoneverywhere, and datbase hosted in MongoDB
+The journal does have a title.
+
+API hosted in Pythoneverywhere, and datbase hosted in MongoDB.
 
 People: backend implementation complete
   - Fields: name, roles, affiliation, email (with email, roles validation implemented)
@@ -35,6 +37,10 @@ All frontend components including:
 - A personal home page that includes the ability to edit/delete accounts and will lead to peronal manuscript dashboards that will display appropriate manuscripts and allow editing of those manuscripts
 - Editor specific pages including text editing page, permission control page, and a list of people
 - manuscript submisson page
+
+These pages will satisfy all the front ed requirements stated in the requirements documentation here: https://github.com/gcallah/SoftwareEngineering/blob/master/docs/user_reqs_spring_2025.md
+
+The current plan is to break dedicate different pages to different people, to allow for simultaneous work to be done on the project. Related pages, for example, log in and account creation page, will be assigned to the same person for convinience.
 
 Finalize Manuscript implementation according to flow chart
 
