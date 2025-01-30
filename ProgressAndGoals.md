@@ -29,6 +29,8 @@ All frontend components including:
 - A masthead page
 - An about page
 - A submissions guidelines page
+- A account creation page
+- A manuscript submission page that will lead to the account creation page and log in page if not logged in
 - A log in page
 - A personal home page that includes the ability to edit/delete accounts and will lead to peronal manuscript dashboards that will display appropriate manuscripts and allow editing of those manuscripts
 - Editor specific pages including text editing page, permission control page, and a list of people
