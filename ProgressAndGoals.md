@@ -40,7 +40,7 @@ All frontend components including:
 
 These pages will satisfy all the front ed requirements stated in the requirements documentation here: https://github.com/gcallah/SoftwareEngineering/blob/master/docs/user_reqs_spring_2025.md
 
-The current plan is to break dedicate different pages to different people, to allow for simultaneous work to be done on the project. Related pages, for example, log in and account creation page, will be assigned to the same person for convinience.
+The current plan is to dedicate different pages to different people, to allow for simultaneous work to be done on the project. Related pages, for example, log in and account creation page, will be assigned to the same person for convinience.
 
 Finalize Manuscript implementation according to flow chart
 
