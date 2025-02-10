@@ -1,5 +1,11 @@
 import data.manuscripts.fields as flds
 
+MANU_ID = "_id"
+CURR_STATE = "curr_state"
+ACTION = "action"
+REFEREE = "referee"
+
+
 # states:
 AUTHOR_REV = 'AUR'
 COPY_EDIT = 'CED'
