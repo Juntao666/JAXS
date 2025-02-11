@@ -1,10 +1,22 @@
-import data.manuscripts.fields as flds
+ACTION = 'action'
+AUTHOR = 'author'
+CURR_STATE = 'curr_state'
+DISP_NAME = 'disp_name'
+MANU_ID = '_id'
+REFEREE = 'referee'
+REFEREES = 'referees'
+TITLE = 'title'
 
-MANU_ID = "_id"
-CURR_STATE = "curr_state"
-ACTION = "action"
-REFEREE = "referee"
+TEST_ID = 'fake_id'
+TEST_FLD_NM = TITLE
+TEST_FLD_DISP_NM = 'Title'
 
+
+FIELDS = {
+    TITLE: {
+        DISP_NAME: TEST_FLD_DISP_NM,
+    },
+}
 
 # states:
 AUTHOR_REV = 'AUR'
@@ -13,11 +25,6 @@ IN_REF_REV = 'REV'
 REJECTED = 'REJ'
 SUBMITTED = 'SUB'
 WITHDRAWN = 'WIT'
-AUTHOR_REVISIONS = 'ARN'
-ED_REV = 'ERV'
-FORMATTING = 'FOR'
-PUBLISHED = 'PUB'
-ED_MOVING = 'MOV'  # extra state to implement editor move
 TEST_STATE = SUBMITTED
 
 VALID_STATES = [
@@ -26,18 +33,14 @@ VALID_STATES = [
     IN_REF_REV,
     REJECTED,
     SUBMITTED,
-    # AUTHOR_REVISIONS,
-    # ED_REV,
-    # FORMATTING,
-    # PUBLISHED,
     WITHDRAWN,
 ]
 
 
 SAMPLE_MANU = {
-    flds.TITLE: 'Short module import names in Python',
-    flds.AUTHOR: 'Sunny Li',
-    flds.REFEREES: [],
+    TITLE: 'Short module import names in Python',
+    AUTHOR: 'Eugene Callahan',
+    REFEREES: [],
 }
 
 
@@ -49,22 +52,13 @@ def is_valid_state(state: str) -> bool:
     return state in VALID_STATES
 
 
-# ed actions:
+# actions:
 ACCEPT = 'ACC'
 ASSIGN_REF = 'ARF'
 DELETE_REF = 'DRF'
-REJECT = 'REJ'
-ACCEPT_W_REV = 'AWR'
-REMOVE_REF = 'RRF'
-EDITOR_MOVE = "EDM"
-
-# au action
 DONE = 'DON'
+REJECT = 'REJ'
 WITHDRAW = 'WIT'
-
-# ref action
-SUBMIT_REV = 'SRV'
-
 # for testing:
 TEST_ACTION = ACCEPT
 
@@ -77,13 +71,6 @@ VALID_ACTIONS = [
     WITHDRAW,
 ]
 
-# for data fields
-REF_VERDICT = [
-    ACCEPT,
-    ACCEPT_W_REV,
-    REJECT
-]
-
 
 def get_actions() -> list:
     return VALID_ACTIONS
@@ -93,22 +80,15 @@ def is_valid_action(action: str) -> bool:
     return action in VALID_ACTIONS
 
 
-def assign_ref(manu: dict, ref: str, extra=None) -> str:
-    print(extra)
-    manu[flds.REFEREES].append(ref)
+def assign_ref(manu: dict, referee: str, extra=None) -> str:
+    manu[REFEREES].append(referee)
     return IN_REF_REV
 
 
-def handle_editor_move(manu: dict, target_state: str) -> str:
-    if target_state not in VALID_STATES:
-        raise ValueError(f"Invalid target state: {target_state}")
-    return target_state
-
-
-def delete_ref(manu: dict, ref: str) -> str:
-    if len(manu[flds.REFEREES]) > 0:
-        manu[flds.REFEREES].remove(ref)
-    if len(manu[flds.REFEREES]) > 0:
+def delete_ref(manu: dict, referee: str) -> str:
+    if len(manu[REFEREES]) > 0:
+        manu[REFEREES].remove(referee)
+    if len(manu[REFEREES]) > 0:
         return IN_REF_REV
     else:
         return SUBMITTED
@@ -165,25 +145,25 @@ def get_valid_actions_by_state(state: str):
     return valid_actions
 
 
-def handle_action(curr_state, action, **kwargs) -> str:
+def handle_action(manu_id, curr_state, action, **kwargs) -> str:
+    kwargs['manu'] = SAMPLE_MANU
     if curr_state not in STATE_TABLE:
         raise ValueError(f'Bad state: {curr_state}')
     if action not in STATE_TABLE[curr_state]:
         raise ValueError(f'{action} not available in {curr_state}')
     return STATE_TABLE[curr_state][action][FUNC](**kwargs)
-    
+
 
 def main():
-    print(handle_action(SUBMITTED, ASSIGN_REF,
-                        manu=SAMPLE_MANU, ref='Jack'))
-    print(handle_action(IN_REF_REV, ASSIGN_REF, manu=SAMPLE_MANU,
+    print(handle_action(TEST_ID, SUBMITTED, ASSIGN_REF, ref='Jack'))
+    print(handle_action(TEST_ID, IN_REF_REV, ASSIGN_REF,
                         ref='Jill', extra='Extra!'))
-    print(handle_action(IN_REF_REV, DELETE_REF, manu=SAMPLE_MANU,
+    print(handle_action(TEST_ID, IN_REF_REV, DELETE_REF,
                         ref='Jill'))
-    print(handle_action(IN_REF_REV, DELETE_REF, manu=SAMPLE_MANU,
+    print(handle_action(TEST_ID, IN_REF_REV, DELETE_REF,
                         ref='Jack'))
-    print(handle_action(SUBMITTED, WITHDRAW, manu=SAMPLE_MANU))
-    print(handle_action(SUBMITTED, REJECT, manu=SAMPLE_MANU))
+    print(handle_action(TEST_ID, SUBMITTED, WITHDRAW))
+    print(handle_action(TEST_ID, SUBMITTED, REJECT))
 
 
 if __name__ == '__main__':

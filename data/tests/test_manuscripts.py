@@ -2,9 +2,7 @@ import random
 
 import pytest
 
-import data.manuscripts.query as mqry
-
-from unittest import skip
+import data.manuscripts as mqry
 
 
 def gen_random_not_valid_str() -> str:
@@ -26,7 +24,7 @@ def test_is_valid_state():
 def test_is_not_valid_state():
     # run this test "a few" times
     for i in range(10):
-        assert not mqry.is_valid_state(gen_random_not_valid_str())    
+        assert not mqry.is_valid_state(gen_random_not_valid_str())
 
 
 def test_is_valid_action():
@@ -42,55 +40,28 @@ def test_is_not_valid_action():
 
 def test_handle_action_bad_state():
     with pytest.raises(ValueError):
-        mqry.handle_action(gen_random_not_valid_str(),
+        mqry.handle_action(mqry.TEST_ID,
+                           gen_random_not_valid_str(),
                            mqry.TEST_ACTION,
                            manu=mqry.SAMPLE_MANU)
 
 
 def test_handle_action_bad_action():
     with pytest.raises(ValueError):
-        mqry.handle_action(mqry.TEST_STATE,
+        mqry.handle_action(mqry.TEST_ID,
+                           mqry.TEST_STATE,
                            gen_random_not_valid_str(),
                            manu=mqry.SAMPLE_MANU)
-
-
-def test_handle_editor_move_missing_target():
-    with pytest.raises(ValueError):
-        mqry.handle_action(mqry.TEST_STATE,
-                           mqry.EDITOR_MOVE,
-                           manu=mqry.SAMPLE_MANU)
-
-
-def test_handle_editor_move_invalid_target():
-    invalid_target_state = gen_random_not_valid_str()
-
-    for state in mqry.get_states():
-        with pytest.raises(ValueError):
-            mqry.handle_action(
-                state,
-                mqry.ED_MOVING,
-                manu=mqry.SAMPLE_MANU,
-                target_state=invalid_target_state
-            )
-
-@skip
-def test_handle_editor_move_valid_target():
-    for state in mqry.get_states():
-        if state != mqry.WITHDRAWN:
-            new_state = mqry.handle_action(
-                mqry.TEST_STATE,
-                mqry.EDITOR_MOVE,
-                manu=mqry.SAMPLE_MANU,
-                target_state=state)
-            assert mqry.is_valid_state(new_state)
 
 
 def test_handle_action_valid_return():
     for state in mqry.get_states():
         for action in mqry.get_valid_actions_by_state(state):
             print(f'{action=}')
-            new_state = mqry.handle_action(state, action,
+            new_state = mqry.handle_action(mqry.TEST_ID,
+                                           state,
+                                           action,
                                            manu=mqry.SAMPLE_MANU,
-                                           ref='Some ref')
+                                           referee='Some ref')
             print(f'{new_state=}')
             assert mqry.is_valid_state(new_state)
