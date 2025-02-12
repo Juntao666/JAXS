@@ -88,6 +88,7 @@ VALID_ACTIONS = [
     DONE,
     REJECT,
     WITHDRAW,
+    REMOVE_REF
 ]
 
 # for data fields
