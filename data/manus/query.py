@@ -5,6 +5,10 @@ CURR_STATE = "curr_state"
 ACTION = "action"
 REFEREE = "referee"
 
+# Additional constants
+EDITOR = "editor"
+TIMESTAMP = "timestamp"
+VERSION = "version"
 
 # states:
 AUTHOR_REV = 'AUR'
@@ -174,6 +178,7 @@ def handle_action(curr_state, action, **kwargs) -> str:
     
 
 def main():
+    debug_log("Starting the manuscript state handler...")
     print(handle_action(SUBMITTED, ASSIGN_REF,
                         manu=SAMPLE_MANU, ref='Jack'))
     print(handle_action(IN_REF_REV, ASSIGN_REF, manu=SAMPLE_MANU,
@@ -184,6 +189,7 @@ def main():
                         ref='Jack'))
     print(handle_action(SUBMITTED, WITHDRAW, manu=SAMPLE_MANU))
     print(handle_action(SUBMITTED, REJECT, manu=SAMPLE_MANU))
+    debug_log("Finished processing actions.")
 
 
 if __name__ == '__main__':
