@@ -58,10 +58,20 @@ def test_handle_action_valid_return():
     for state in mqry.get_states():
         for action in mqry.get_valid_actions_by_state(state):
             print(f'{action=}')
-            new_state = mqry.handle_action(mqry.TEST_ID,
-                                           state,
-                                           action,
-                                           manu=mqry.SAMPLE_MANU,
-                                           referee='Some ref')
+            if action == mqry.EDITOR_MOVE:
+                new_state = mqry.handle_action(
+                    mqry.TEST_ID,
+                    state,
+                    action,
+                    manu=mqry.SAMPLE_MANU,
+                    referee='Some ref',
+                    target_state=mqry.SUBMITTED
+                )
+            else:
+                new_state = mqry.handle_action(mqry.TEST_ID,
+                                               state,
+                                               action,
+                                               manu=mqry.SAMPLE_MANU,
+                                               referee='Some ref')
             print(f'{new_state=}')
             assert mqry.is_valid_state(new_state)
