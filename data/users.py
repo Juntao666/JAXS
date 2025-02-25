@@ -53,6 +53,11 @@ def read_one(username: str) -> dict:
     return user
 
 
+def read() -> dict:
+    users = dbc.read_dict(USER_COLLECT, USERNAME)
+    return users
+
+
 def pass_is_valid(username: str, password: str) -> bool:
     user = read_one(username)
     if user and user.get(PASSWORD) == password:

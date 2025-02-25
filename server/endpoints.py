@@ -13,6 +13,7 @@ import werkzeug.exceptions as wz
 import data.people as ppl
 import data.text as txt
 import data.manuscripts as manu
+import data.users as usr
 
 app = Flask(__name__)
 CORS(app)
@@ -41,6 +42,8 @@ TITLE_RESP = 'Title'
 TEXT_EP = '/texts'
 MANUSCRIPT_EP = '/manus'
 MANU_EP = '/manu'
+LOGIN_EP = '/login'
+USER_EP = '/user'
 
 
 @api.route(HELLO_EP)
@@ -379,3 +382,78 @@ class ReceiveAction(Resource):
             MESSAGE: 'Action received!',
             RETURN: ret,
         }
+
+
+USER_LOGIN_FIELDS = api.model('UserLogin', {
+    usr.USERNAME: fields.String,
+    usr.PASSWORD: fields.String,
+})
+
+
+@api.route(USER_EP)
+class Users(Resource):
+    def get(self):
+        """
+        Retrieve all login credentials.
+        """
+        return usr.read(), HTTPStatus.OK
+
+
+@api.route(LOGIN_EP)
+class UserLogin(Resource):
+    @api.response(HTTPStatus.OK, 'Success')
+    @api.response(HTTPStatus.UNAUTHORIZED, 'Not authorized')
+    @api.expect(USER_LOGIN_FIELDS)
+    def post(self):
+        try:
+            username = request.json.get(usr.USERNAME)
+            password = request.json.get(usr.PASSWORD)
+
+            if not username or not password:
+                raise ValueError("Missing username or password")
+
+            # Check if user exists in MongoDB
+            user = usr.read_one(username)
+            if user and usr.pass_is_valid(username, password):
+                return {"message": "Login successful"}, HTTPStatus.OK
+
+            raise ValueError("Invalid username or password")
+
+        except Exception as err:
+            return ({"message": f"Authentication failed: {err}"},
+                    HTTPStatus.UNAUTHORIZED)
+
+
+USER_REGISTER_FIELDS = api.model('UserRegister', {
+    usr.USERNAME: fields.String,
+    usr.PASSWORD: fields.String,
+})
+
+
+@api.route(f'{LOGIN_EP}/create')
+class UserRegister(Resource):
+    @api.response(HTTPStatus.CREATED, 'Success')
+    @api.response(HTTPStatus.NOT_ACCEPTABLE, 'Not acceptable')
+    @api.expect(USER_REGISTER_FIELDS)
+    def post(self):
+        """
+        Create a new user with username and password.
+        """
+        try:
+            username = request.json.get(usr.USERNAME)
+            password = request.json.get(usr.PASSWORD)
+
+            if not username or not password:
+                raise ValueError("Missing username or password")
+
+            # Check if user already exists
+            if usr.read_one(username):
+                raise ValueError("User already exists")
+
+            # Insert into MongoDB
+            usr.create(username, password)
+            return {"message": "User created!"}, HTTPStatus.CREATED
+
+        except Exception as err:
+            return ({"message": f"User creation failed: {err}"},
+                    HTTPStatus.BAD_REQUEST)

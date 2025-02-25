@@ -273,3 +273,9 @@ def test_delete_text():
     assert DELETE_KEY not in resp_json
 
 
+@patch('data.users.read', autospec=True, return_value=[{'username': 'Callahan', 'password': '123abc', 'level': 0}])
+def test_read_user(mock_get_users):
+    resp = TEST_CLIENT.get(ep.USER_EP)
+    resp_json = resp.get_json()
+    assert len(resp_json) > 0
+    assert any(user['username'] == 'Callahan' for user in resp_json)
