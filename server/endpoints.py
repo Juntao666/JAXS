@@ -357,6 +357,37 @@ MANU_ACTION_FLDS = api.model('ManuscriptAction', {
 })
 
 
+@api.route(f'{MANU_EP}/receive_action')
+class ReceiveAction(Resource):
+    """
+    Receive an action for a manuscript.
+    """
+    @api.response(HTTPStatus.OK, 'Success')
+    @api.response(HTTPStatus.NOT_ACCEPTABLE, 'Not acceptable')
+    @api.expect(MANU_ACTION_FLDS)
+    def put(self):
+        """
+        Receive an action for a manuscript.
+        """
+        try:
+            manu_id = request.json.get(manu.MANU_ID)
+            curr_state = request.json.get(manu.CURR_STATE)
+            action = request.json.get(manu.ACTION)
+            try:
+                target_state = request.json.get(manu.TARGET_STATE)
+            except Exception:
+                target_state = None
+            kwargs = {}
+            kwargs[manu.REFEREE] = request.json.get(manu.REFEREE)
+            ret = manu.handle_action(manu_id, curr_state,
+                                     action, target_state, **kwargs)
+        except Exception as err:
+            raise wz.NotAcceptable(f'Bad action: ' f'{err=}')
+        return {
+            MESSAGE: 'Action received!',
+            RETURN: ret,
+        }
+
 # @api.route(f'{MANU_EP}/receive_action')
 # class ReceiveAction(Resource):
 #     """
@@ -371,57 +402,19 @@ MANU_ACTION_FLDS = api.model('ManuscriptAction', {
 #         """
 #         try:
 #             manu_id = request.json.get(manu.MANU_ID)
-#             curr_state = request.json.get(manu.CURR_STATE)
 #             action = request.json.get(manu.ACTION)
-#             try:
-#                 target_state = request.json.get(manu.TARGET_STATE)
-#             except Exception:
-#                 target_state = None
 #             kwargs = {}
-#             kwargs[manu.REFEREE] = request.json.get(manu.REFEREE)
-#             ret = manu.handle_action(manu_id, curr_state,
-#                                      action, target_state, **kwargs)
-#         except Exception as err:
-#             raise wz.NotAcceptable(f'Bad action: ' f'{err=}')
-#         return {
-#             MESSAGE: 'Action received!',
-#             RETURN: ret,
-#         }
-
-@api.route(f'{MANU_EP}/receive_action')
-class ReceiveAction(Resource):
-    """
-    Receive an action for a manuscript.
-    """
-    @api.response(HTTPStatus.OK, 'Success')
-    @api.response(HTTPStatus.NOT_ACCEPTABLE, 'Not acceptable')
-    @api.expect(MANU_ACTION_FLDS)
-    def put(self):
-        """
-        Receive an action for a manuscript.
-        """
-        try:
-            # 获取请求数据
-            manu_id = request.json.get(manu.MANU_ID)
-            action = request.json.get(manu.ACTION)
-            
-            # 构建kwargs
-            kwargs = {}
-            if referee := request.json.get(manu.REFEREE):
-                kwargs['referee'] = referee
-            if target_state := request.json.get(manu.TARGET_STATE):
-                kwargs['target_state'] = target_state
-
-            # 使用update_manuscript更新状态
-            new_state = manu.update_manuscript(manu_id, action, **kwargs)
-            
-            return {
-                MESSAGE: 'Action received!',
-                RETURN: new_state,
-            }
-
-        except ValueError as err:
-            raise wz.NotAcceptable(f'Bad action: {err=}')
+#             if referee := request.json.get(manu.REFEREE):
+#                 kwargs['referee'] = referee
+#             if target_state := request.json.get(manu.TARGET_STATE):
+#                 kwargs['target_state'] = target_state
+#             new_state = manu.update_manuscript(manu_id, action, **kwargs)
+#             return {
+#                 MESSAGE: 'Action received!',
+#                 RETURN: new_state,
+#             }
+#         except ValueError as err:
+#             raise wz.NotAcceptable(f'Bad action: {err=}')
 
 
 USER_LOGIN_FIELDS = api.model('UserLogin', {
