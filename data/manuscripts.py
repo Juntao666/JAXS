@@ -3,6 +3,7 @@ AUTHOR = 'author'
 CURR_STATE = 'curr_state'
 DISP_NAME = 'disp_name'
 MANU_ID = '_id'
+TARGET_STATE = 'target_state'
 REFEREE = 'referee'
 REFEREES = 'referees'
 TITLE = 'title'
@@ -244,7 +245,8 @@ def get_valid_actions_by_state(state: str):
     return valid_actions
 
 
-def handle_action(manu_id, curr_state, action, **kwargs) -> str:
+def handle_action(manu_id, curr_state, action,
+                  target_state=None, **kwargs) -> str:
     kwargs['manu'] = SAMPLE_MANU
     if curr_state not in STATE_TABLE:
         raise ValueError(f'Bad state: {curr_state}')
@@ -253,7 +255,6 @@ def handle_action(manu_id, curr_state, action, **kwargs) -> str:
 
     # Handle editor move
     if action == EDITOR_MOVE:
-        target_state = kwargs.get('target_state')
         if target_state is None:
             raise ValueError("target_state is required for EDITOR_MOVE")
         return STATE_TABLE[curr_state][action][FUNC](manu=kwargs['manu'],

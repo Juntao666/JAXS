@@ -373,9 +373,14 @@ class ReceiveAction(Resource):
             manu_id = request.json.get(manu.MANU_ID)
             curr_state = request.json.get(manu.CURR_STATE)
             action = request.json.get(manu.ACTION)
+            try:
+                target_state = request.json.get(manu.TARGET_STATE)
+            except Exception:
+                target_state = None
             kwargs = {}
             kwargs[manu.REFEREE] = request.json.get(manu.REFEREE)
-            ret = manu.handle_action(manu_id, curr_state, action, **kwargs)
+            ret = manu.handle_action(manu_id, curr_state,
+                                     action, target_state, **kwargs)
         except Exception as err:
             raise wz.NotAcceptable(f'Bad action: ' f'{err=}')
         return {
