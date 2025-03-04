@@ -1,3 +1,7 @@
+import data.db_connect as dbc
+import data.manus.fields as flds
+MANUSCRIPTS_COLLECT = 'manuscripts'
+
 ACTION = 'action'
 AUTHOR = 'author'
 CURR_STATE = 'curr_state'
@@ -120,6 +124,11 @@ def delete_ref(manu: dict, referee: str) -> str:
         return IN_REF_REV
     else:
         return SUBMITTED
+
+
+def read_one(_id: str) -> dict:
+    manu = dbc.read_one(MANUSCRIPTS_COLLECT, {MANU_ID: _id})
+    return manu
 
 
 def handle_editor_move(manu: dict, target_state: str) -> str:
@@ -262,6 +271,21 @@ def handle_action(manu_id, curr_state, action,
 
     # Handle everything else
     return STATE_TABLE[curr_state][action][FUNC](**kwargs)
+
+
+def update_manuscript(_id: str, action: str, **kwargs):
+    manuscript = read_one(_id)
+    if manuscript is None:
+        raise ValueError(f"Manuscript not found: {_id}")
+    if action not in VALID_ACTIONS:
+        raise ValueError(f"Invalid action: {action}")
+    new_state = handle_action(_id, manuscript[CURR_STATE], action, **kwargs)
+    update_dict = {
+        flds.STATE: new_state,
+        flds.HISTORY: manuscript[flds.HISTORY] + [new_state],
+    }
+    dbc.update(MANUSCRIPTS_COLLECT, {MANU_ID: _id}, update_dict)
+    return new_state
 
 
 def main():
