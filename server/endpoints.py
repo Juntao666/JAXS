@@ -354,6 +354,14 @@ MANU_ACTION_FLDS = api.model('ManuscriptAction', {
     manu.CURR_STATE: fields.String,
     manu.ACTION: fields.String,
     manu.REFEREE: fields.String,
+    manu.TARGET_STATE: fields.String,
+})
+
+MANU_UPDATE_ACTION_FLDS = api.model('ManuscriptAction', {
+    manu.MANU_ID: fields.String,
+    manu.ACTION: fields.String,
+    manu.REFEREE: fields.String,
+    manu.TARGET_STATE: fields.String,
 })
 
 
@@ -399,7 +407,7 @@ class UpdateAction(Resource):
     """
     @api.response(HTTPStatus.OK, 'Success')
     @api.response(HTTPStatus.NOT_ACCEPTABLE, 'Not acceptable')
-    @api.expect(MANU_ACTION_FLDS)
+    @api.expect(MANU_UPDATE_ACTION_FLDS)
     def put(self):
         """
         Receive an action for a manuscript.
