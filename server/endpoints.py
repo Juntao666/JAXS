@@ -14,6 +14,7 @@ import data.people as ppl
 import data.text as txt
 import data.manuscripts as manu
 import data.users as usr
+import data.roles as rls
 
 app = Flask(__name__)
 CORS(app)
@@ -31,6 +32,7 @@ MESSAGE = 'Message'
 PEOPLE_EP = '/people'
 PUBLISHER = 'Palgave'
 PUBLISHER_RESP = 'Publisher'
+ROLES_EP = '/roles'
 RETURN = 'return'
 PROJECT_NAME_EP = '/project_name'
 PROJECT_NAME_RESP = 'Project Name'
@@ -112,6 +114,18 @@ class JournalTitle(Resource):
             DATE_RESP: DATE,
             PUBLISHER_RESP: PUBLISHER,
         }
+
+
+@api.route(ROLES_EP)
+class Roles(Resource):
+    """
+    This class handles reading person roles.
+    """
+    def get(self):
+        """
+        Retrieve the journal person roles.
+        """
+        return rls.read()
 
 
 @api.route(PEOPLE_EP)
