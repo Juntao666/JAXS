@@ -127,7 +127,7 @@ def delete_ref(manu: dict, referee: str) -> str:
 
 
 def read_one(_id: str) -> dict:
-    manu = dbc.read_one(MANUSCRIPTS_COLLECT, {MANU_ID: _id})
+    manu = dbc.read_one(MANUSCRIPTS_COLLECT, {KEY: _id})
     return manu
 
 
@@ -272,19 +272,91 @@ def handle_action(manu_id, curr_state, action,
     # Handle everything else
     return STATE_TABLE[curr_state][action][FUNC](**kwargs)
 
+# implementation of manuscript in the database ----------------
 
-def update_manuscript(_id: str, action: str, **kwargs):
+
+# Fields
+KEY = 'key'
+TITLE = 'title'
+AUTHOR = 'author'
+AUTHOR_EMAIL = 'author_email'
+STATE = 'state'
+TEXT = 'text'
+ABSTRACT = 'abstract'
+HISTORY = 'history'
+
+
+def exists(key: str) -> bool:
+    """
+    Checks if a manuscript with the given key exists.
+    Arguments:
+        - key: The key for the manuscript
+    Returns True if the manuscript exists, False otherwise.
+    """
+    return read_one(key) is not None
+
+
+def create(key: str, title: str, author: str, author_email: str,
+           state: str, text: str, abstract: str, editors: list,
+           referees: list, history: list) -> str:
+    """
+    Adds a new manuscript entry if the key does not already exist.
+    Arguments:
+        - key: The unique ID for the manuscript
+        - title: The title of the manuscript
+        - author: The author of the manuscript
+        - author_email: The email address of the author
+        - state: The current state of the manuscript
+        - text: The body text of the manuscript
+        - abstract: The abstract of the manuscript
+        - editors: The assigned editors for the manuscript
+        - referees: A list of referees
+        - history: A list of historical states for the manuscript
+    Returns a success message or raises an error if the key already exists.
+    """
+    if exists(key):
+        raise ValueError(f"Adding duplicate manuscript {key}")
+    dbc.create(MANUSCRIPTS_COLLECT, {
+        KEY: key,
+        TITLE: title,
+        AUTHOR: author,
+        AUTHOR_EMAIL: author_email,
+        STATE: state,
+        TEXT: text,
+        ABSTRACT: abstract,
+        EDITORS: editors,
+        REFEREES: referees,
+        HISTORY: history,
+    })
+    return key
+
+
+def delete(key: str) -> str:
+    """
+    Removes a manuscript entry if the key exists.
+    Arguments:
+        - key: The key of the manuscript to delete
+    Returns a success message or a does not exist message.
+    """
+    if not exists(key):
+        return f"'{key}' does not exist."
+    dbc.delete(MANUSCRIPTS_COLLECT, {KEY: key})
+    return f"'{key}' deleted successfully."
+
+
+def update_action(_id: str, action: str, target_state=None, **kwargs):
     manuscript = read_one(_id)
-    if manuscript is None:
-        raise ValueError(f"Manuscript not found: {_id}")
+    if not exists(_id):
+        raise ValueError(f"Manuscript {_id} does not exist")
     if action not in VALID_ACTIONS:
         raise ValueError(f"Invalid action: {action}")
-    new_state = handle_action(_id, manuscript[CURR_STATE], action, **kwargs)
+    new_state = handle_action(_id, manuscript[STATE], action,
+                              target_state, **kwargs)
     update_dict = {
         flds.STATE: new_state,
         flds.HISTORY: manuscript[flds.HISTORY] + [new_state],
     }
-    dbc.update(MANUSCRIPTS_COLLECT, {MANU_ID: _id}, update_dict)
+    dbc.update(MANUSCRIPTS_COLLECT, {KEY: _id}, update_dict)
     return new_state
 
 
