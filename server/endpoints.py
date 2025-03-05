@@ -322,8 +322,8 @@ MANUSCRIPTS_CREATE_FLDS = api.model('AddNewManuscriptEntry', {
     'state': fields.String,
     'text': fields.String,
     'abstract': fields.String,
-    'editor': fields.String,
-    'referee': fields.Raw,
+    'editors': fields.List(fields.String),
+    'referees': fields.List(fields.String),
     'history': fields.List(fields.String),
 })
 
@@ -357,6 +357,7 @@ MANU_ACTION_FLDS = api.model('ManuscriptAction', {
 })
 
 
+# Testing fsm only
 @api.route(f'{MANU_EP}/receive_action')
 class ReceiveAction(Resource):
     """
@@ -379,6 +380,7 @@ class ReceiveAction(Resource):
                 target_state = None
             kwargs = {}
             kwargs[manu.REFEREE] = request.json.get(manu.REFEREE)
+
             ret = manu.handle_action(manu_id, curr_state,
                                      action, target_state, **kwargs)
         except Exception as err:
@@ -388,33 +390,109 @@ class ReceiveAction(Resource):
             RETURN: ret,
         }
 
-# @api.route(f'{MANU_EP}/receive_action')
-# class ReceiveAction(Resource):
-#     """
-#     Receive an action for a manuscript.
-#     """
-#     @api.response(HTTPStatus.OK, 'Success')
-#     @api.response(HTTPStatus.NOT_ACCEPTABLE, 'Not acceptable')
-#     @api.expect(MANU_ACTION_FLDS)
-#     def put(self):
-#         """
-#         Receive an action for a manuscript.
-#         """
-#         try:
-#             manu_id = request.json.get(manu.MANU_ID)
-#             action = request.json.get(manu.ACTION)
-#             kwargs = {}
-#             if referee := request.json.get(manu.REFEREE):
-#                 kwargs['referee'] = referee
-#             if target_state := request.json.get(manu.TARGET_STATE):
-#                 kwargs['target_state'] = target_state
-#             new_state = manu.update_manuscript(manu_id, action, **kwargs)
-#             return {
-#                 MESSAGE: 'Action received!',
-#                 RETURN: new_state,
-#             }
-#         except ValueError as err:
-#             raise wz.NotAcceptable(f'Bad action: {err=}')
+
+# testing update action with manuscript
+@api.route(f'{MANU_EP}/update_action')
+class UpdateAction(Resource):
+    """
+    Receive an action for a manuscript.
+    """
+    @api.response(HTTPStatus.OK, 'Success')
+    @api.response(HTTPStatus.NOT_ACCEPTABLE, 'Not acceptable')
+    @api.expect(MANU_ACTION_FLDS)
+    def put(self):
+        """
+        Receive an action for a manuscript.
+        """
+        try:
+            manu_id = request.json.get(manu.MANU_ID)
+            action = request.json.get(manu.ACTION)
+            try:
+                target_state = request.json.get(manu.TARGET_STATE)
+            except Exception:
+                target_state = None
+            kwargs = {}
+            kwargs[manu.REFEREE] = request.json.get(manu.REFEREE)
+            ret = manu.update_action(manu_id, action, target_state, **kwargs)
+
+        except Exception as err:
+            raise wz.NotAcceptable(f'Bad action: ' f'{err=}')
+        return {
+            MESSAGE: 'Action received!',
+            RETURN: ret,
+        }
+
+
+@api.route(MANUSCRIPT_EP)
+class Manuscripts(Resource):
+    """
+    This class handles retrieving all manuscript entries
+    or creating new manuscript entries.
+    """
+    def get(self):
+        """
+        Retrieve all manuscript entries.
+        """
+        return manu.read(), HTTPStatus.OK
+
+    @api.response(HTTPStatus.OK, 'Success')
+    @api.response(HTTPStatus.NOT_ACCEPTABLE, 'Not acceptable')
+    @api.expect(MANUSCRIPTS_CREATE_FLDS)
+    def post(self):
+        """
+        Add a new manuscript entry.
+        """
+        try:
+            key = request.json.get('key')
+            title = request.json.get('title')
+            author = request.json.get('author')
+            author_email = request.json.get('author_email')
+            state = request.json.get('state')
+            text = request.json.get('text')
+            abstract = request.json.get('abstract')
+            editors = request.json.get('editors')
+            referees = request.json.get('referees')
+            history = request.json.get('history')
+            ret = manu.create(key, title, author, author_email, state,
+                              text, abstract, editors, referees, history)
+        except ValueError as err:
+            raise wz.NotAcceptable(f'Could not add manuscript: {err}')
+        return {
+            'message': 'Manuscript added!',
+            'return': ret,
+        }, HTTPStatus.OK
+
+
+@api.route(f'{MANUSCRIPT_EP}/<key>')
+class Manuscript(Resource):
+    """
+    This class handles retrieving, updating,
+    or deleting a specific manuscript entry by its key.
+    """
+    @api.response(HTTPStatus.OK, 'Success')
+    @api.response(HTTPStatus.NOT_FOUND, 'Manuscript not found')
+    def get(self, key):
+        """
+        Retrieve a specific manuscript entry by key.
+        """
+        manuscript = manu.read_one(key)
+        if manuscript:
+            return manuscript, HTTPStatus.OK
+        else:
+            raise wz.NotFound(f'Manuscript with key \'{key}\' not found.')
+
+    @api.response(HTTPStatus.OK, 'Success')
+    @api.response(HTTPStatus.NOT_FOUND, 'Manuscript not found')
+    def delete(self, key):
+        """
+        Delete a specific manuscript entry by key.
+        """
+        ret = manu.delete(key)
+        if "does not exist" in ret:
+            raise wz.NotFound(ret)
+        return {
+            'message': ret,
+        }, HTTPStatus.OK
 
 
 USER_LOGIN_FIELDS = api.model('UserLogin', {

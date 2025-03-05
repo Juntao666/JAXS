@@ -296,6 +296,15 @@ def exists(key: str) -> bool:
     return read_one(key) is not None
 
 
+def read() -> dict:
+    """
+    Retrieves all manuscripts as a dictionary keyed on manuscript keys.
+    Returns a dictionary of manuscripts.
+    """
+    manuscripts = dbc.read_dict(MANUSCRIPTS_COLLECT, KEY)
+    return manuscripts
+
+
 def create(key: str, title: str, author: str, author_email: str,
            state: str, text: str, abstract: str, editors: list,
            referees: list, history: list) -> str:

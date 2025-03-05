@@ -121,6 +121,14 @@ def test_doesnt_exist():
     assert not mqry.exists(NONE_EXISTENT_KEY)
 
 
+@patch('data.manuscripts.read', autospec=True, return_value={"RandManuscript": {"title": "RandTitle"}})
+def test_read(mock_read):
+    manuscripts = mqry.read()
+    assert isinstance(manuscripts, dict)
+    for key in manuscripts:
+        assert isinstance(key, str)
+
+
 def test_read_one(temp_manuscript):
     assert mqry.read_one(temp_manuscript) is not None
 

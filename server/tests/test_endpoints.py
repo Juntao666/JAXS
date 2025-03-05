@@ -279,3 +279,56 @@ def test_read_user(mock_get_users):
     resp_json = resp.get_json()
     assert len(resp_json) > 0
     assert any(user['username'] == 'Callahan' for user in resp_json)
+
+
+@pytest.fixture(scope="function")
+@skip("work in progress")
+def add_manuscript():
+    NEW_KEY = "testManuscript"
+    data = {
+        "key": NEW_KEY,
+        "title": "Test Manuscript Title",
+        "author": "Test Author",
+        "author_email": "email@nyu.edu",
+        "state": "SUB",
+        "text": "blah blah blah",
+        "abstract": "Test Abstract",
+        "editors": ["editor1"],
+        "referees": ["ref1"],
+        "history": ["SUB"]
+    }
+    resp = TEST_CLIENT.post(ep.MANUSCRIPT_EP, json=data)
+    assert resp.status_code == HTTPStatus.OK
+
+    yield NEW_KEY
+
+    delete_resp = TEST_CLIENT.delete(f"{ep.MANUSCRIPT_EP}/{NEW_KEY}")
+    assert delete_resp.status_code == HTTPStatus.OK
+
+
+@skip("work in progress")
+def test_add_manuscript(add_manuscript):
+    NEW_KEY = add_manuscript
+    resp = TEST_CLIENT.get(ep.MANUSCRIPT_EP)
+    resp_json = resp.get_json()
+    assert NEW_KEY in resp_json
+
+
+def test_delete_manuscript():
+    DELETE_KEY = "deleteManuscript"
+    data = {
+        "key": DELETE_KEY,
+        "title": "To Delete",
+        "author": "Author To Delete",
+        "state": "SUB",
+        "abstract": "Abstract to delete"
+    }
+    resp = TEST_CLIENT.post(ep.MANUSCRIPT_EP, json=data)
+    assert resp.status_code == HTTPStatus.OK
+
+    resp = TEST_CLIENT.delete(f'{ep.MANUSCRIPT_EP}/{DELETE_KEY}')
+    assert resp.status_code == HTTPStatus.OK
+
+    resp = TEST_CLIENT.get(ep.MANUSCRIPT_EP)
+    resp_json = resp.get_json()
+    assert DELETE_KEY not in resp_json
