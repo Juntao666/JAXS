@@ -349,7 +349,7 @@ class Masthead(Resource):
         return {MASTHEAD: ppl.get_masthead()}
 
 
-MANU_ACTION_FLDS = api.model('ManuscriptAction', {
+MANU_ACTION_FLDS = api.model('ManuscriptActionReceived', {
     manu.MANU_ID: fields.String,
     manu.CURR_STATE: fields.String,
     manu.ACTION: fields.String,
@@ -357,7 +357,7 @@ MANU_ACTION_FLDS = api.model('ManuscriptAction', {
     manu.TARGET_STATE: fields.String,
 })
 
-MANU_UPDATE_ACTION_FLDS = api.model('ManuscriptAction', {
+MANU_UPDATE_ACTION_FLDS = api.model('ManuscriptUpdateAction', {
     manu.MANU_ID: fields.String,
     manu.ACTION: fields.String,
     manu.REFEREE: fields.String,

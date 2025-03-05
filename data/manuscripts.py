@@ -90,10 +90,13 @@ VALID_ACTIONS = [
     ACCEPT,
     ASSIGN_REF,
     DELETE_REF,
-    DONE,
     REJECT,
+    DONE,
+    ACCEPT_W_REV,
     WITHDRAW,
-    REMOVE_REF
+    REMOVE_REF,
+    EDITOR_MOVE,
+    SUBMIT_REV
 ]
 
 # for data fields
