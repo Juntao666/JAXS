@@ -3,6 +3,8 @@ This module interfaces to our user data.
 """
 
 import data.db_connect as dbc
+import hashlib
+import secrets
 
 LEVEL = 'level'
 MIN_USER_NAME_LEN = 2
@@ -14,23 +16,31 @@ client = dbc.connect_db()
 print(f'{client=}')
 
 
+def hash_password(password: str) -> str:
+    return hashlib.sha256(password.encode()).hexdigest()
+
+
+def verify_password(stored_password: str, provided_password: str) -> bool:
+    return secrets.compare_digest(stored_password, hash_password(provided_password))
+
+
 def get_users() -> dict:
     """
     Our contract:
         - No arguments.
-        - Returns a dictionary of users keyed on user name (a str).
-        - Each user name must be the key for a dictionary.
+        - Returns a dictionary of users keyed on username (a str).
+        - Each username must be the key for a dictionary.
         - That dictionary must at least include a LEVEL member that has an int
         value.
     """
     users = {
         "Callahan": {
             LEVEL: 0,
-            PASSWORD: "123abc",
+            PASSWORD: hash_password("123abc"),
         },
         "Reddy": {
             LEVEL: 1,
-            PASSWORD: "123ABC",
+            PASSWORD: hash_password("123ABC"),
         },
     }
     return users
@@ -60,7 +70,9 @@ def read() -> dict:
 
 def pass_is_valid(username: str, password: str) -> bool:
     user = read_one(username)
-    if user and user.get(PASSWORD) == password:
+    if user and user.get(PASSWORD) == password:  # keep until cleanup db
+        return True
+    elif user and verify_password(user.get(PASSWORD, ''), password):
         return True
     return False
 
@@ -69,7 +81,7 @@ def create(username: str, password: str, level: int = 0) -> str:
     if read_one(username):
         raise ValueError(f"Username '{username}' already exists.")
 
-    user = {USERNAME: username, PASSWORD: password, LEVEL: level}
+    user = {USERNAME: username, PASSWORD: hash_password(password), LEVEL: level}
 
     dbc.create(USER_COLLECT, user)
 
