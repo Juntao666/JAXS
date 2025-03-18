@@ -5,9 +5,11 @@ This module interfaces to our user data.
 import data.db_connect as dbc
 import hashlib
 import secrets
+import re
 
 LEVEL = 'level'
 MIN_USER_NAME_LEN = 2
+MIN_PASSWORD_LEN = 8
 USERNAME = 'username'
 PASSWORD = 'password'
 USER_COLLECT = 'user'
@@ -69,6 +71,23 @@ def read() -> dict:
     return users
 
 
+def validate_password(password: str) -> None:
+    if len(password) < MIN_PASSWORD_LEN:
+        raise ValueError(f"Password must be at least {MIN_PASSWORD_LEN}"
+                         f"characters long.")
+    if not re.search(r"[A-Z]", password):
+        raise ValueError("Password must contain at least one"
+                         "uppercase letter.")
+    if not re.search(r"[a-z]", password):
+        raise ValueError("Password must contain at least one"
+                         "lowercase letter.")
+    if not re.search(r"\d", password):
+        raise ValueError("Password must contain at least one digit.")
+    if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", password):
+        raise ValueError("Password must contain at least one"
+                         "special character.")
+
+
 def pass_is_valid(username: str, password: str) -> bool:
     user = read_one(username)
     if user and user.get(PASSWORD) == password:  # keep until cleanup db
@@ -81,6 +100,8 @@ def pass_is_valid(username: str, password: str) -> bool:
 def create(username: str, password: str, level: int = 0) -> str:
     if read_one(username):
         raise ValueError(f"Username '{username}' already exists.")
+
+    validate_password(password)
 
     user = {USERNAME: username, PASSWORD: hash_password(password),
             LEVEL: level}

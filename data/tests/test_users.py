@@ -33,7 +33,7 @@ def test_pass_is_valid():
 
 def test_create():
     new_user = "TestUser"
-    new_password = "test_password"
+    new_password = "TestPassword123!"
     new_level = 1
 
     existing_user = usrs.read_one(new_user)
@@ -47,6 +47,29 @@ def test_create():
     assert user is not None
     assert user[usrs.USERNAME] == new_user
     assert user[usrs.LEVEL] == new_level
+
+
+def test_validate_password():
+    valid_password = "StrongPass1!"
+    try:
+        usrs.validate_password(valid_password)
+    except ValueError:
+        assert False
+
+    invalid_passwords = [
+        "short1!",
+        "nouppercase1!",
+        "NOLOWERCASE1!",
+        "NoNumber!",
+        "NoSpecial123",
+    ]
+
+    for pwd in invalid_passwords:
+        try:
+            usrs.validate_password(pwd)
+            assert False
+        except ValueError:
+            pass
 
 
 def test_delete_user():
