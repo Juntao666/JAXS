@@ -21,7 +21,8 @@ def hash_password(password: str) -> str:
 
 
 def verify_password(stored_password: str, provided_password: str) -> bool:
-    return secrets.compare_digest(stored_password, hash_password(provided_password))
+    return secrets.compare_digest(stored_password,
+                                  hash_password(provided_password))
 
 
 def get_users() -> dict:
@@ -46,12 +47,12 @@ def get_users() -> dict:
     return users
 
 
-# users = get_users()
-# for username, user in users.items():
-#     password = user.get(PASSWORD)
-#     level = user.get(LEVEL, 0)
-#     usr = {USERNAME: username, PASSWORD: password, LEVEL: level}
-#     dbc.create(USER_COLLECT, usr)
+users = get_users()
+for username, user in users.items():
+    password = user.get(PASSWORD)
+    level = user.get(LEVEL, 0)
+    usr = {USERNAME: username, PASSWORD: password, LEVEL: level}
+    dbc.create(USER_COLLECT, usr)
 
 
 def read_one(username: str) -> dict:
@@ -81,7 +82,8 @@ def create(username: str, password: str, level: int = 0) -> str:
     if read_one(username):
         raise ValueError(f"Username '{username}' already exists.")
 
-    user = {USERNAME: username, PASSWORD: hash_password(password), LEVEL: level}
+    user = {USERNAME: username, PASSWORD: hash_password(password),
+            LEVEL: level}
 
     dbc.create(USER_COLLECT, user)
 
