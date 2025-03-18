@@ -36,12 +36,12 @@ def get_users() -> dict:
     return users
 
 
-users = get_users()
-for username, user in users.items():
-    password = user.get(PASSWORD)
-    level = user.get(LEVEL, 0)
-    usr = {USERNAME: username, PASSWORD: password, LEVEL: level}
-    dbc.create(USER_COLLECT, usr)
+# users = get_users()
+# for username, user in users.items():
+#     password = user.get(PASSWORD)
+#     level = user.get(LEVEL, 0)
+#     usr = {USERNAME: username, PASSWORD: password, LEVEL: level}
+#     dbc.create(USER_COLLECT, usr)
 
 
 def read_one(username: str) -> dict:
