@@ -567,7 +567,7 @@ USER_REGISTER_FIELDS = api.model('UserRegister', {
 class UserRegister(Resource):
     @api.response(HTTPStatus.CREATED, 'Success')
     @api.response(HTTPStatus.BAD_REQUEST, 'Bad Request')
-    @api.response(HTTPStatus.CONFLICT, 'Conflict - Username already exists')
+    @api.response(HTTPStatus.CONFLICT, 'Conflict')
     @api.expect(USER_REGISTER_FIELDS)
     def post(self):
         """
@@ -578,11 +578,13 @@ class UserRegister(Resource):
             password = request.json.get(usr.PASSWORD)
 
             if not username or not password:
-                return {"message": "Missing username or password"}, HTTPStatus.BAD_REQUEST
+                return ({"message": "Missing username or password"},
+                        HTTPStatus.BAD_REQUEST)
 
             # Check if user already exists
             if usr.read_one(username):
-                return {"message": "Username already exists"}, HTTPStatus.CONFLICT
+                return ({"message": "Username already exists"},
+                        HTTPStatus.CONFLICT)
 
             # Validate password
             try:
@@ -592,7 +594,9 @@ class UserRegister(Resource):
 
             # Insert into MongoDB
             usr.create(username, password)
-            return {"message": "User created successfully!"}, HTTPStatus.CREATED
+            return ({"message": "User created successfully!"},
+                    HTTPStatus.CREATED)
 
         except Exception as err:
-            return {"message": f"User creation failed: {err}"}, HTTPStatus.INTERNAL_SERVER_ERROR
+            return ({"message": f"User creation failed: {err}"},
+                    HTTPStatus.INTERNAL_SERVER_ERROR)
