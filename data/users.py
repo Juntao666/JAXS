@@ -6,7 +6,7 @@ import data.db_connect as dbc
 import hashlib
 import secrets
 import re
-import data.people as ppl
+# import data.people as ppl
 
 LEVEL = 'level'
 MIN_USER_NAME_LEN = 2
