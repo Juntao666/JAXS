@@ -571,29 +571,27 @@ class UserRegister(Resource):
     @api.expect(USER_REGISTER_FIELDS)
     def post(self):
         """
-        Create a new user with username and password.
+        Create a new user with username, email and password.
         """
         try:
             username = request.json.get(usr.USERNAME)
             password = request.json.get(usr.PASSWORD)
+            email = request.json.get(usr.EMAIL)
 
-            if not username or not password:
-                return ({"message": "Missing username or password"},
+            if not username or not password or not email:
+                return ({"message": "Missing username, password, or email"},
                         HTTPStatus.BAD_REQUEST)
 
-            # Check if user already exists
             if usr.read_one(username):
                 return ({"message": "Username already exists"},
                         HTTPStatus.CONFLICT)
 
-            # Validate password
             try:
                 usr.validate_password(password)
             except ValueError as err:
                 return {"message": str(err)}, HTTPStatus.BAD_REQUEST
 
-            # Insert into MongoDB
-            usr.create(username, password)
+            usr.create(username, password, email)
             return ({"message": "User created successfully!"},
                     HTTPStatus.CREATED)
 

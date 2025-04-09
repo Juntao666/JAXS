@@ -6,11 +6,13 @@ import data.db_connect as dbc
 import hashlib
 import secrets
 import re
+import data.people as ppl
 
 LEVEL = 'level'
 MIN_USER_NAME_LEN = 2
 MIN_PASSWORD_LEN = 8
 USERNAME = 'username'
+EMAIL = 'email'
 PASSWORD = 'password'
 USER_COLLECT = 'user'
 
@@ -39,10 +41,12 @@ def get_users() -> dict:
     users = {
         "Callahan": {
             LEVEL: 0,
+            EMAIL: 'cal0D@nyu.edu',
             PASSWORD: hash_password("123abc"),
         },
         "Reddy": {
             LEVEL: 1,
+            EMAIL: 'red1@nyu.edu',
             PASSWORD: hash_password("123ABC"),
         },
     }
@@ -52,8 +56,9 @@ def get_users() -> dict:
 users = get_users()
 for username, user in users.items():
     password = user.get(PASSWORD)
+    email = user.get(EMAIL)
     level = user.get(LEVEL, 0)
-    usr = {USERNAME: username, PASSWORD: password, LEVEL: level}
+    usr = {USERNAME: username, EMAIL: email, PASSWORD: password, LEVEL: level}
     dbc.create(USER_COLLECT, usr)
 
 
@@ -97,14 +102,18 @@ def pass_is_valid(username: str, password: str) -> bool:
     return False
 
 
-def create(username: str, password: str, level: int = 0) -> str:
+def create(username: str, password: str, email: str, level: int = 0) -> str:
     if read_one(username):
         raise ValueError(f"Username '{username}' already exists.")
 
     validate_password(password)
 
-    user = {USERNAME: username, PASSWORD: hash_password(password),
-            LEVEL: level}
+    user = {
+        USERNAME: username,
+        EMAIL: email,
+        PASSWORD: hash_password(password),
+        LEVEL: level,
+    }
 
     dbc.create(USER_COLLECT, user)
 

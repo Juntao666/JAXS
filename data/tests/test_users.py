@@ -4,7 +4,7 @@ import data.users as usrs
 def test_get_users():
     users = usrs.get_users()
     assert isinstance(users, dict)
-    assert len(users) > 0  # at least one user :)
+    assert len(users) > 0  # at least one user exists :)
     for key in users:
         assert isinstance(key, str)
         assert len(key) >= usrs.MIN_USER_NAME_LEN
@@ -12,6 +12,8 @@ def test_get_users():
         assert isinstance(user, dict)
         assert usrs.LEVEL in user
         assert isinstance(user[usrs.LEVEL], int)
+        assert usrs.EMAIL in user
+        assert isinstance(user[usrs.EMAIL], str)
 
 
 def test_read_one():
@@ -23,6 +25,8 @@ def test_read_one():
     assert usrs.LEVEL in user
     assert isinstance(user[usrs.LEVEL], int)
     assert usrs.PASSWORD in user
+    assert usrs.EMAIL in user
+    assert isinstance(user[usrs.EMAIL], str)
 
 
 def test_pass_is_valid():
@@ -34,19 +38,22 @@ def test_pass_is_valid():
 def test_create():
     new_user = "TestUser"
     new_password = "TestPassword123!"
+    new_email = "testuser@example.com"
     new_level = 1
 
     existing_user = usrs.read_one(new_user)
     if existing_user:
-        usrs.delete_user(new_user)  # Delete the user if it exists
+        usrs.delete_user(new_user)
 
-    created_user = usrs.create(new_user, new_password, new_level)
+    created_user = usrs.create(new_user, new_password, new_email, new_level)
     assert created_user == new_user
 
     user = usrs.read_one(new_user)
     assert user is not None
     assert user[usrs.USERNAME] == new_user
     assert user[usrs.LEVEL] == new_level
+    assert usrs.EMAIL in user
+    assert user[usrs.EMAIL] == new_email
 
 
 def test_validate_password():
