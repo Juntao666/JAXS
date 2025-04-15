@@ -50,7 +50,11 @@ LOGIN_EP = '/login'
 USER_EP = '/user'
 DEV_EP = '/dev/logs'
 ELOG_LOC = '/var/log/jaxs-proj-annatx.pythonanywhere.com.error.log'
-ELOG_KEY = 'logs'
+ELOG_KEY = 'error logs'
+ALOG_LOC = '/var/log/jaxs-proj-annatx.pythonanywhere.com.access.log'
+ALOG_KEY = 'access logs'
+SLOG_LOC = '/var/log/jaxs-proj-annatx.pythonanywhere.com.server.log'
+SLOG_KEY = 'server logs'
 
 
 @api.route(HELLO_EP)
@@ -609,9 +613,34 @@ def format_output(result):
     return result.stdout.decode("utf-8")
 
 
-@api.route(DEV_EP)
-class DevLogs(Resource):
+@api.route(f'{DEV_EP}/error')
+class ErrorLog(Resource):
     def get(self):
+        """
+        Retrieves last 10 error logs.
+        """
         result = subprocess.run(f"tail {ELOG_LOC}",
                                 shell=True, stdout=subprocess.PIPE)
         return {ELOG_KEY: format_output(result)}
+
+
+@api.route(f'{DEV_EP}/access')
+class AccessLog(Resource):
+    def get(self):
+        """
+        Retrieves last 10 access logs.
+        """
+        result = subprocess.run(f"tail {ALOG_LOC}",
+                                shell=True, stdout=subprocess.PIPE)
+        return {ALOG_KEY: format_output(result)}
+
+
+@api.route(f'{DEV_EP}/server')
+class ServerLog(Resource):
+    def get(self):
+        """
+        Retrieves last 10 server logs.
+        """
+        result = subprocess.run(f"tail {SLOG_LOC}",
+                                shell=True, stdout=subprocess.PIPE)
+        return {SLOG_KEY: format_output(result)}
