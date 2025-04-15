@@ -526,6 +526,22 @@ class Manuscript(Resource):
         }, HTTPStatus.OK
 
 
+@api.route(f'{MANU_EP}/valid_actions/<state>')
+class ValidActions(Resource):
+    """
+    Return valid actions for a given manuscript state.
+    """
+    @api.response(HTTPStatus.OK, 'Success')
+    @api.response(HTTPStatus.BAD_REQUEST, 'Invalid state')
+    def get(self, state):
+        try:
+            valid_actions = manu.get_valid_actions_by_state(state)
+            return {'state': state,
+                    'valid_actions': list(valid_actions)}, HTTPStatus.OK
+        except KeyError as e:
+            raise wz.BadRequest(f"Invalid state '{state}': {e}")
+
+
 USER_LOGIN_FIELDS = api.model('UserLogin', {
     usr.USERNAME: fields.String,
     usr.PASSWORD: fields.String,

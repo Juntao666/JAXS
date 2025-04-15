@@ -332,3 +332,19 @@ def test_delete_manuscript():
     resp = TEST_CLIENT.get(ep.MANUSCRIPT_EP)
     resp_json = resp.get_json()
     assert DELETE_KEY not in resp_json
+
+
+def test_valid_actions_for_valid_state():
+    response = TEST_CLIENT.get(ep.MANU_EP + '/valid_actions/SUB')
+    assert response.status_code == 200
+    data = response.get_json()
+    assert data['state'] == 'SUB'
+    assert isinstance(data['valid_actions'], list)
+    assert all(isinstance(action, str) for action in data['valid_actions'])
+
+
+def test_valid_actions_for_invalid_state():
+    response = TEST_CLIENT.get(ep.MANU_EP + '/valid_actions/INVALID_STATE')
+    assert response.status_code == 400
+    data = response.get_json()
+    assert 'Invalid state' in data['message']
