@@ -16,6 +16,8 @@ import data.manuscripts as manu
 import data.users as usr
 import data.roles as rls
 
+import subprocess
+
 app = Flask(__name__)
 CORS(app)
 api = Api(app)
@@ -46,6 +48,9 @@ MANUSCRIPT_EP = '/manus'
 MANU_EP = '/manu'
 LOGIN_EP = '/login'
 USER_EP = '/user'
+DEV_EP = '/dev/logs'
+ELOG_LOC = '/var/log/jaxs-proj-annatx.pythonanywhere.com.error.log'
+ELOG_KEY = 'logs'
 
 
 @api.route(HELLO_EP)
@@ -598,3 +603,15 @@ class UserRegister(Resource):
         except Exception as err:
             return ({"message": f"User creation failed: {err}"},
                     HTTPStatus.INTERNAL_SERVER_ERROR)
+
+
+def format_output(result):
+    return result.stdout.decode("utf-8")
+
+
+@api.route(DEV_EP)
+class DevLogs(Resource):
+    def get(self):
+        result = subprocess.run(f"tail {ELOG_LOC}",
+                                shell=True, stdout=subprocess.PIPE)
+        return {ELOG_KEY: format_output(result)}
