@@ -573,7 +573,8 @@ class UserLogin(Resource):
             # Check if user exists in MongoDB
             user = usr.read_one(username)
             if user and usr.pass_is_valid(username, password):
-                return {"message": "Login successful"}, HTTPStatus.OK
+                return {"message": "Login successful",
+                        "email": user["email"]}, HTTPStatus.OK
 
             raise ValueError("Invalid username or password")
 
