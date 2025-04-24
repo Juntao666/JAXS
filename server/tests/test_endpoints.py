@@ -56,13 +56,13 @@ def test_read(mock_read):
 @patch(PEOPLE_LOC + 'read_one', autospec=True,
        return_value={NAME: 'Joe Schmoe'})
 def test_read_one(mock_read):
-    resp = TEST_CLIENT.get(f'{ep.PEOPLE_EP}/mock_id')
+    resp = TEST_CLIENT.get(f'{ep.PEOPLE_EP}/mock_id/fake_id')
     assert resp.status_code == OK
 
 
 @patch(PEOPLE_LOC + 'read_one', autospec=True, return_value=None)
 def test_read_one_not_found(mock_read):
-    resp = TEST_CLIENT.get(f'{ep.PEOPLE_EP}/mock_id')
+    resp = TEST_CLIENT.get(f'{ep.PEOPLE_EP}/mock_id/fake_id')
     assert resp.status_code == NOT_FOUND
 
     
@@ -98,7 +98,7 @@ def test_get_people():
 
 @pytest.fixture(scope="function")
 def add_person():
-    NEW_EMAIL = "testtemp@nyu.edu"
+    NEW_EMAIL = "2029@nyu.edu"
     data = {
         "name": "Test",
         "email": NEW_EMAIL,
@@ -107,13 +107,13 @@ def add_person():
     }
     resp = TEST_CLIENT.put(f'{ep.PEOPLE_EP}/create', json=data)
     assert resp.status_code == HTTPStatus.OK
-    
+
     yield NEW_EMAIL
-    
+
     delete_resp = TEST_CLIENT.delete(f"{ep.PEOPLE_EP}/{NEW_EMAIL}")
     assert delete_resp.status_code == HTTPStatus.OK
 
-    
+
 def test_add_person(add_person):
     NEW_EMAIL = add_person
 
@@ -123,7 +123,7 @@ def test_add_person(add_person):
 
 
 def test_update_person():
-    UPDATE_EMAIL = "updatetemp@nyu.edu"
+    UPDATE_EMAIL = "2029@nyu.edu"
     data = {
         "name": "original",
         "email": UPDATE_EMAIL,
@@ -156,8 +156,7 @@ def test_update_person():
 
 
 def test_delete_person():
-
-    DELETE_EMAIL = "delete@nyu.edu"
+    DELETE_EMAIL = "2029@nyu.edu"
     data = {
         "name": "delete",
         "email": DELETE_EMAIL,
