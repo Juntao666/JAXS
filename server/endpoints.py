@@ -18,8 +18,6 @@ import data.roles as rls
 
 import subprocess
 
-import security.security as sec
-
 app = Flask(__name__)
 CORS(app)
 api = Api(app)
@@ -152,14 +150,11 @@ class People(Resource):
         return ppl.read()
 
 
-EDITOR = 'editor'
-
-
-@api.route(f'{PEOPLE_EP}/<email>/<user_id>')
+@api.route(f'{PEOPLE_EP}/<email>')
 class Person(Resource):
     @api.response(HTTPStatus.OK, 'Success.')
     @api.response(HTTPStatus.NOT_FOUND, 'No such person.')
-    def get(self, email, user_id):
+    def get(self, email):
         """
         Retrieve a journal person.
         """
@@ -171,12 +166,7 @@ class Person(Resource):
 
     @api.response(HTTPStatus.OK, 'Success.')
     @api.response(HTTPStatus.NOT_FOUND, 'No such person.')
-    def delete(self, email, user_id):
-        kwargs = {sec.LOGIN_KEY: 'any key for now'}
-        if not sec.is_permitted(sec.PEOPLE, sec.DELETE, user_id,
-                                **kwargs):
-            raise wz.Forbidden('This user does not have '
-                               + 'authorization for this action.')
+    def delete(self, email):
         ret = ppl.delete(email)
         if ret is not None:
             return {'Deleted': ret}
