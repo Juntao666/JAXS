@@ -98,7 +98,7 @@ def test_get_people():
 
 @pytest.fixture(scope="function")
 def add_person():
-    NEW_EMAIL = "2029@nyu.edu"
+    NEW_EMAIL = "test3494@nyu.edu"
     data = {
         "name": "Test",
         "email": NEW_EMAIL,
@@ -123,7 +123,7 @@ def test_add_person(add_person):
 
 
 def test_update_person():
-    UPDATE_EMAIL = "2029@nyu.edu"
+    UPDATE_EMAIL = "test3494@nyu.edu"
     data = {
         "name": "original",
         "email": UPDATE_EMAIL,
@@ -156,7 +156,7 @@ def test_update_person():
 
 
 def test_delete_person():
-    DELETE_EMAIL = "2029@nyu.edu"
+    DELETE_EMAIL = "test3494@nyu.edu"
     data = {
         "name": "delete",
         "email": DELETE_EMAIL,

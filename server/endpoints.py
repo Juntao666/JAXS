@@ -198,7 +198,7 @@ class PersonDelete(Resource):
             return person, HTTPStatus.OK
         else:
             raise wz.NotFound(f'No such record: {email}')
-        
+
     @api.response(HTTPStatus.OK, 'Success.')
     @api.response(HTTPStatus.NOT_FOUND, 'No such person.')
     def delete(self, email):
