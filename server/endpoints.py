@@ -185,31 +185,31 @@ class Person(Resource):
         # return {'Message': ret}
 
 
-@api.route(f'{PEOPLE_EP}/<email>')
-class PersonDelete(Resource):
-    """
-    Delete a journal person without requiring a user_id.
-    """
-    @api.response(HTTPStatus.OK, 'Success.')
-    @api.response(HTTPStatus.NOT_FOUND, 'No such person.')
-    def get(self, email):
-        person = ppl.read_one(email)
-        if person:
-            return person, HTTPStatus.OK
-        else:
-            raise wz.NotFound(f'No such record: {email}')
-
-    @api.response(HTTPStatus.OK, 'Success.')
-    @api.response(HTTPStatus.NOT_FOUND, 'No such person.')
-    def delete(self, email):
-        """
-        Delete a journal person by email.
-        """
-        ret = ppl.delete(email)
-        if ret is not None:
-            return {'Deleted': ret}, HTTPStatus.OK
-        else:
-            raise wz.NotFound(f'No such person: {email}')
+# @api.route(f'{PEOPLE_EP}/<email>')
+# class PersonDelete(Resource):
+#     """
+#     Delete a journal person without requiring a user_id.
+#     """
+#     @api.response(HTTPStatus.OK, 'Success.')
+#     @api.response(HTTPStatus.NOT_FOUND, 'No such person.')
+#     def get(self, email):
+#         person = ppl.read_one(email)
+#         if person:
+#             return person, HTTPStatus.OK
+#         else:
+#             raise wz.NotFound(f'No such record: {email}')
+#
+#     @api.response(HTTPStatus.OK, 'Success.')
+#     @api.response(HTTPStatus.NOT_FOUND, 'No such person.')
+#     def delete(self, email):
+#         """
+#         Delete a journal person by email.
+#         """
+#         ret = ppl.delete(email)
+#         if ret is not None:
+#             return {'Deleted': ret}, HTTPStatus.OK
+#         else:
+#             raise wz.NotFound(f'No such person: {email}')
 
 
 PEOPLE_CREATE_FLDS = api.model('AddNewPeopleEntry', {

@@ -1,6 +1,9 @@
 from functools import wraps
 
-# import data.db_connect as dbc
+import copy
+from data.db_connect import read as db_read
+from data.people import PEOPLE_COLLECT
+from data.users import USER_COLLECT
 
 """
 Our record format to meet our requirements (see security.md) will be:
@@ -68,11 +71,12 @@ BAD_FEATURE = 'baaaad feature'
 
 PEOPLE_MISSING_ACTION = READ
 GOOD_USER_ID = 'ejc369@nyu.edu'
+TEST_USER_ID = 'anna_test_ed'
 
 security_recs = None
 
 PEOPLE_CHANGE_PERMISSIONS = {
-    USER_LIST: [GOOD_USER_ID],
+    USER_LIST: [GOOD_USER_ID, TEST_USER_ID],
     CHECKS: {
         LOGIN: True,
     },
@@ -87,13 +91,15 @@ TEST_RECS = {
     },
     TEXTS: {
         CREATE: {
-            USER_LIST: [GOOD_USER_ID],
+            USER_LIST: [GOOD_USER_ID,
+                        TEST_USER_ID],
             CHECKS: {
                 LOGIN: True,
             },
         },
         DELETE: {
-            USER_LIST: [GOOD_USER_ID],
+            USER_LIST: [GOOD_USER_ID,
+                        TEST_USER_ID],
             CHECKS: {
                 LOGIN: True,
                 IP_ADDR: True,
@@ -103,7 +109,8 @@ TEST_RECS = {
     },
     BAD_FEATURE: {
          CREATE: {
-             USER_LIST: [GOOD_USER_ID],
+             USER_LIST: [GOOD_USER_ID,
+                        TEST_USER_ID],
              CHECKS: {
                  'Bad check': True,
              },
@@ -145,20 +152,40 @@ CHECK_FUNCS = {
 
 def read() -> dict:
     global security_recs
-    # dbc.read()
-    security_recs = TEST_RECS
+    security_recs = copy.deepcopy(TEST_RECS)
+
+    people = db_read(PEOPLE_COLLECT)
+    users  = db_read(USER_COLLECT)
+
+    ed_emails = [
+        person.get('email', '')
+        for person in people
+        if 'ED' in person.get('roles', [])
+    ]
+    ed_usernames = [
+        u['username']
+        for u in users
+        if u.get('email') in ed_emails
+    ]
+
+    # merge ED users into PEOPLE permissions
+    for perms in security_recs.get(PEOPLE, {}).values():
+        if USER_LIST in perms:
+            perms[USER_LIST] = list(set(perms[USER_LIST] + ed_usernames))
+
     return security_recs
 
 
 def needs_recs(fn):
     """
-    Should be used to decorate any function that directly accesses sec recs.
+    Decorator that reloads security_recs from the database
+    on every call, so newly-created editors are picked up immediately.
     """
     @wraps(fn)
     def wrapper(*args, **kwargs):
         global security_recs
-        if not security_recs:
-            security_recs = read()
+        # unconditionally re-read from the DB
+        security_recs = read()
         return fn(*args, **kwargs)
     return wrapper
 
