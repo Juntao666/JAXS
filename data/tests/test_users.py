@@ -1,5 +1,7 @@
 import data.users as usrs
 from unittest import skip
+from unittest.mock import patch
+from data.users import PASSWORD, pass_is_valid, hash_password
 
 def test_get_users():
     users = usrs.get_users()
@@ -30,11 +32,17 @@ def test_read_one():
     assert isinstance(user[usrs.EMAIL], str)
 
 
-def test_pass_is_valid():
-    valid_user = "Callahan"
-    valid_password = "123abc"
-    assert usrs.pass_is_valid(valid_user, valid_password) is True
+@patch('data.users.read_one', autospec=True)
+def test_pass_is_valid(mock_read_one):
+    clear_password = "123abc"
+    stored_hash = hash_password(clear_password)
 
+    mock_read_one.return_value = {PASSWORD: stored_hash}
+
+    assert pass_is_valid("anyuser", clear_password) is True
+
+    assert pass_is_valid("anyuser", "wrongpass") is False
+    
 
 def test_create():
     new_user = "TestUser"
