@@ -74,7 +74,6 @@ ASSIGN_REF = 'ARF'
 DELETE_REF = 'DRF'
 REJECT = 'REJ'
 ACCEPT_W_REV = 'AWR'
-REMOVE_REF = 'RRF'
 EDITOR_MOVE = "EDM"
 
 # au action
@@ -94,7 +93,6 @@ VALID_ACTIONS = [
     DONE,
     ACCEPT_W_REV,
     WITHDRAW,
-    REMOVE_REF,
     EDITOR_MOVE,
     SUBMIT_REV
 ]
@@ -115,18 +113,26 @@ def is_valid_action(action: str) -> bool:
     return action in VALID_ACTIONS
 
 
-def assign_ref(manu: dict, referee: str, extra=None) -> str:
-    manu[REFEREES].append(referee)
+def assign_ref(manu: dict, referee: str, **kwargs) -> str:
+    if REFEREES not in manu:
+        manu[REFEREES] = []
+    if referee and referee not in manu[REFEREES]:
+        manu[REFEREES].append(referee)
+        dbc.update(MANUSCRIPTS_COLLECT, {KEY: manu[KEY]},
+                   {REFEREES: manu[REFEREES]})
     return IN_REF_REV
 
 
 def delete_ref(manu: dict, referee: str) -> str:
-    if len(manu[REFEREES]) > 0:
+    if REFEREES not in manu:
+        manu[REFEREES] = []
+
+    if referee in manu[REFEREES]:
         manu[REFEREES].remove(referee)
-    if len(manu[REFEREES]) > 0:
-        return IN_REF_REV
-    else:
-        return SUBMITTED
+        dbc.update(MANUSCRIPTS_COLLECT, {KEY: manu[KEY]},
+                   {REFEREES: manu[REFEREES]})
+
+    return IN_REF_REV if manu[REFEREES] else SUBMITTED
 
 
 def read_one(_id: str) -> dict:
@@ -166,9 +172,6 @@ STATE_TABLE = {
             FUNC: assign_ref,
         },
         DELETE_REF: {
-            FUNC: delete_ref,
-        },
-        REMOVE_REF: {
             FUNC: delete_ref,
         },
         ACCEPT: {
@@ -259,7 +262,7 @@ def get_valid_actions_by_state(state: str):
 
 def handle_action(manu_id, curr_state, action,
                   target_state=None, **kwargs) -> str:
-    kwargs['manu'] = SAMPLE_MANU
+    kwargs['manu'] = read_one(manu_id)
     if curr_state not in STATE_TABLE:
         raise ValueError(f'Bad state: {curr_state}')
     if action not in STATE_TABLE[curr_state]:

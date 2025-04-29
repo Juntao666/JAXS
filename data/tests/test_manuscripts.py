@@ -56,26 +56,43 @@ def test_handle_action_bad_action():
 
 
 def test_handle_action_valid_return():
+    test_key = "testing2025-11-1"
+    mqry.delete(test_key)
+    mqry.create(
+        key=test_key,
+        title='Test Manuscript',
+        author='Test Author',
+        author_email='test@example.com',
+        state=mqry.SUBMITTED,
+        text='Test body',
+        abstract='Test abstract',
+        editors=[],
+        referees=[],
+        history=[mqry.SUBMITTED]
+    )
+
     for state in mqry.get_states():
-        for action in mqry.get_valid_actions_by_state(state):
+        valid_actions = mqry.get_valid_actions_by_state(state)
+        for action in valid_actions:
             print(f'{action=}')
             if action == mqry.EDITOR_MOVE:
                 new_state = mqry.handle_action(
-                    mqry.TEST_ID,
+                    test_key,
                     state,
                     action,
-                    manu=mqry.SAMPLE_MANU,
-                    referee='Some ref',
                     target_state=mqry.SUBMITTED
                 )
             else:
-                new_state = mqry.handle_action(mqry.TEST_ID,
-                                               state,
-                                               action,
-                                               manu=mqry.SAMPLE_MANU,
-                                               referee='Some ref')
+                new_state = mqry.handle_action(
+                    test_key,
+                    state,
+                    action,
+                    referee='Some Ref'
+                )
             print(f'{new_state=}')
             assert mqry.is_valid_state(new_state)
+
+    mqry.delete(test_key)
 
 
 TEMP_KEY = "tempManuscript1"
