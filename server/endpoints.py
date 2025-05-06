@@ -496,7 +496,8 @@ class UpdateAction(Resource):
 
 AssignRefModel = api.model('AssignRefModel', {
     manu.KEY:      fields.String(required=True, description='Manuscript key'),
-    manu.REFEREE:  fields.String(required=True, description='Email of the referee'),
+    manu.REFEREE:  fields.String(required=True,
+                                 description='Email of the referee'),
 })
 
 
@@ -512,7 +513,8 @@ class AssignReferee(Resource):
         referee = payload.get(manu.REFEREE, '').strip()
 
         if not manu_id or not referee:
-            raise wz.NotAcceptable('Both manuscript key and referee email are required.')
+            raise wz.NotAcceptable('Both manuscript key'
+                                   'and referee email are required.')
 
         manuscript = manu.read_one(manu_id)
         if not manuscript:
@@ -528,10 +530,10 @@ class AssignReferee(Resource):
         if 'REF' not in roles:
             roles.add('REF')
             ppl.update_person(
-                name = person[ppl.NAME],
-                affiliation = person[ppl.AFFILIATION],
-                email = referee,
-                roles = list(roles)
+                name=person[ppl.NAME],
+                affiliation=person[ppl.AFFILIATION],
+                email=referee,
+                roles=list(roles)
             )
 
         return {
