@@ -177,8 +177,11 @@ class Person(Resource):
                                 **kwargs):
             raise wz.Forbidden('This user does not have '
                                + 'authorization for this action.')
+        person = ppl.read_one(email)
         ret = ppl.delete(email)
         if ret is not None:
+            if person:
+                usr.delete_user(person.get('name'))
             return {'Deleted': ret}, HTTPStatus.OK
         else:
             raise wz.NotFound(f'No such person: {email}')
@@ -592,6 +595,21 @@ class Users(Resource):
         Retrieve all login credentials.
         """
         return usr.read(), HTTPStatus.OK
+
+    @api.route(f"{USER_EP}/<username>")
+    @api.param('username', 'The username to delete')
+    class User(Resource):
+        @api.response(HTTPStatus.OK, 'User deleted')
+        @api.response(HTTPStatus.NOT_FOUND, 'User not found')
+        def delete(self, username):
+            """
+            Delete a user by username.
+            """
+            if usr.delete_user(username):
+                return ({"message": f"User '{username}' deleted."},
+                        HTTPStatus.OK)
+            return ({"message": f"User '{username}' not found."},
+                    HTTPStatus.NOT_FOUND)
 
 
 @api.route(LOGIN_EP)

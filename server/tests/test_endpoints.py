@@ -18,6 +18,7 @@ from data.people import NAME
 
 import server.endpoints as ep
 import data.manuscripts as manu
+import data.users as usr
 
 TEST_CLIENT = ep.app.test_client()
 
@@ -281,6 +282,36 @@ def test_read_user(mock_get_users):
     resp_json = resp.get_json()
     assert len(resp_json) > 0
     assert any(user['username'] == 'Callahan' for user in resp_json)
+
+
+@patch.object(usr, 'delete_user')
+def test_delete_user_success(mock_delete):
+    # Arrange
+    mock_delete.return_value = True
+    username = "alice"
+
+    # Act
+    resp = TEST_CLIENT.delete(f"{ep.USER_EP}/{username}")
+
+    # Assert
+    assert resp.status_code == HTTPStatus.OK
+    assert resp.get_json() == {"message": f"User '{username}' deleted."}
+    mock_delete.assert_called_once_with(username)
+
+
+@patch.object(usr, 'delete_user')
+def test_delete_user_not_found(mock_delete):
+    # Arrange
+    mock_delete.return_value = False
+    username = "bob"
+
+    # Act
+    resp = TEST_CLIENT.delete(f"{ep.USER_EP}/{username}")
+
+    # Assert
+    assert resp.status_code == HTTPStatus.NOT_FOUND
+    assert resp.get_json() == {"message": f"User '{username}' not found."}
+    mock_delete.assert_called_once_with(username)
 
 
 @pytest.fixture(scope="function")
