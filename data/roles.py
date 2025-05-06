@@ -8,7 +8,7 @@ TEST_CODE = AUTHOR_CODE
 ED_CODE = 'ED'
 ME_CODE = 'ME'
 CE_CODE = 'CE'
-RE_CODE = 'RE'
+RE_CODE = 'REF'
 
 ROLES = {
     ED_CODE: 'Editor',

@@ -118,8 +118,18 @@ def assign_ref(manu: dict, referee: str, **kwargs) -> str:
         manu[REFEREES] = []
     if referee and referee not in manu[REFEREES]:
         manu[REFEREES].append(referee)
-        dbc.update(MANUSCRIPTS_COLLECT, {KEY: manu[KEY]},
-                   {REFEREES: manu[REFEREES]})
+
+    manu[STATE] = IN_REF_REV
+
+    dbc.update(
+      MANUSCRIPTS_COLLECT,
+      {KEY: manu[KEY]},
+      {
+        REFEREES: manu[REFEREES],
+        STATE:    IN_REF_REV
+      }
+    )
+
     return IN_REF_REV
 
 

@@ -494,6 +494,52 @@ class UpdateAction(Resource):
         }
 
 
+AssignRefModel = api.model('AssignRefModel', {
+    manu.KEY:      fields.String(required=True, description='Manuscript key'),
+    manu.REFEREE:  fields.String(required=True, description='Email of the referee'),
+})
+
+
+@api.route(f'{MANU_EP}/assign_referee')
+class AssignReferee(Resource):
+    @api.expect(AssignRefModel)
+    @api.response(HTTPStatus.OK,   'Referee assigned and role updated')
+    @api.response(HTTPStatus.NOT_FOUND, 'Missing manuscript or person')
+    @api.response(HTTPStatus.NOT_ACCEPTABLE, 'Bad request')
+    def post(self):
+        payload = request.get_json() or {}
+        manu_id = payload.get(manu.KEY, '').strip()
+        referee = payload.get(manu.REFEREE, '').strip()
+
+        if not manu_id or not referee:
+            raise wz.NotAcceptable('Both manuscript key and referee email are required.')
+
+        manuscript = manu.read_one(manu_id)
+        if not manuscript:
+            raise wz.NotFound(f'No manuscript with key {manu_id}')
+
+        person = ppl.read_one(referee)
+        if not person:
+            raise wz.NotFound(f'No person with email {referee}')
+
+        new_state = manu.assign_ref(manuscript, referee)
+
+        roles = set(person.get(ppl.ROLES, []))
+        if 'REF' not in roles:
+            roles.add('REF')
+            ppl.update_person(
+                name = person[ppl.NAME],
+                affiliation = person[ppl.AFFILIATION],
+                email = referee,
+                roles = list(roles)
+            )
+
+        return {
+            'message': 'Referee assigned and REF role granted',
+            'new_state':  new_state,
+        }, HTTPStatus.OK
+
+
 @api.route(MANUSCRIPT_EP)
 class Manuscripts(Resource):
     """
