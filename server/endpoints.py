@@ -542,6 +542,32 @@ class AssignReferee(Resource):
         }, HTTPStatus.OK
 
 
+@api.route(f'{MANU_EP}/remove_referee')
+class RemoveReferee(Resource):
+    @api.expect(AssignRefModel)
+    @api.response(HTTPStatus.OK,   'Referee removed')
+    @api.response(HTTPStatus.NOT_FOUND, 'Missing manuscript')
+    @api.response(HTTPStatus.NOT_ACCEPTABLE, 'Bad request')
+    def post(self):
+        payload = request.get_json() or {}
+        manu_id = payload.get(manu.KEY, '').strip()
+        referee = payload.get(manu.REFEREE, '').strip()
+
+        if not manu_id or not referee:
+            raise wz.NotAcceptable('Both manuscript key'
+                                   'and referee email are required.')
+
+        manuscript = manu.read_one(manu_id)
+        if not manuscript:
+            raise wz.NotFound(f'No manuscript with key {manu_id}')
+
+        manu.delete_ref(manuscript, referee)
+
+        return {
+            'message': 'Referee removed',
+        }, HTTPStatus.OK
+
+
 @api.route(MANUSCRIPT_EP)
 class Manuscripts(Resource):
     """

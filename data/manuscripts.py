@@ -196,6 +196,9 @@ STATE_TABLE = {
         EDITOR_MOVE: {
             FUNC: handle_editor_move,
         },
+        SUBMIT_REV: {
+            FUNC: lambda **kwargs: IN_REF_REV,
+        },
         **COMMON_ACTIONS,
     },
     COPY_EDIT: {
