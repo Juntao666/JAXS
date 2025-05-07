@@ -188,6 +188,7 @@ EDITOR = 'editor'
 class PersonByEmail(Resource):
     def options(self, email):
         return '', HTTPStatus.OK
+
     def delete(self, email):
         """
         Delete a journal person by email, no user_id check.
